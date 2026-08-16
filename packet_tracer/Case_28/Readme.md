@@ -52,7 +52,7 @@ Result
 
 The laptop successfully authenticated and connected to the Access Point.
 
-What I Learned
+## What I Learned
 A Wi-Fi network can be visible even when the password is incorrect.
 The wireless client must use the correct security key/password.
 If the password does not match the Access Point, authentication fails.
