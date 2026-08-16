@@ -19,7 +19,6 @@ Wi-Fi Password:
 
 `Cisco123`
 
-![AP Security](screenshots/02-ap-security.png)
 
 ## Problem Created
 
@@ -29,19 +28,17 @@ The laptop was configured with the wrong Wi-Fi password:
 
 The password did not match the password configured on the Access Point.
 
-![Wrong Password](screenshots/03-wrong-password.png)
+
 
 ## Observed Problem
 
 The laptop could see the Wi-Fi network but authentication failed because the password was incorrect.
 
-![Authentication Failed](screenshots/04-authentication-failed.png)
-
 ## Root Cause
 
 The wireless client was using a different password from the Access Point.
 
-```text
+## text
 Access Point Password: Cisco123
 Laptop Password: Wrong123
 
