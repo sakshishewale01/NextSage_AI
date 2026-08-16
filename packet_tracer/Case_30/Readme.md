@@ -48,14 +48,14 @@ VLANs
 
 ## The required VLAN is:
 
-VLAN 10
-Name: STUDENTS
+ VLAN 10
+ Name: STUDENTS
 
 A second VLAN was created to demonstrate the fault:
 
-VLAN 20
-Name: WRONG_VLAN
-Access Point Configuration
+ VLAN 20
+ Name: WRONG_VLAN
+ Access Point Configuration
 
 The Access Point was configured with the wireless network:
 
@@ -81,7 +81,7 @@ VLAN 10 – STUDENTS
 
 Therefore, the Access Point was connected to the wrong VLAN.
 
-Evidence
+## Evidence
 
 The VLAN configuration was checked using:
 
@@ -103,7 +103,8 @@ Fa0/1 → VLAN 20 ❌
 The required configuration was:
 
 Fa0/1 → VLAN 10 ✅
-Solution
+
+## Solution
 
 The Access Point's switch port was changed to VLAN 10.
 
@@ -123,7 +124,7 @@ show vlan brief
 
 The Access Point port was now correctly assigned to VLAN 10.
 
-Laptop Configuration
+## Laptop Configuration
 
 The laptop was connected to the Access Point using:
 
