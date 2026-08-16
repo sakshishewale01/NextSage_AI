@@ -1,4 +1,4 @@
-#NET-010 – DHCP Pool Missing
+## NET-010 – DHCP Pool Missing
 
 ## Problem
 The DHCP pool was not initially present on the Cisco router.
