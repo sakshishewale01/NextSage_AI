@@ -38,14 +38,14 @@ Router
 Network Configuration
 Router
 
-Router interface:
+## Router interface:
 
 Interface: GigabitEthernet 0/0
 IP Address: 192.168.10.1
 Subnet Mask: 255.255.255.0
 VLANs
 
-The required VLAN is:
+## The required VLAN is:
 
 VLAN 10
 Name: STUDENTS
@@ -62,7 +62,7 @@ SSID: CampusWiFi
 
 The laptop connects to this wireless network.
 
-Problem Created
+## Problem Created
 
 The Access Point was connected to Switch port Fa0/1.
 
@@ -106,7 +106,7 @@ Solution
 
 The Access Point's switch port was changed to VLAN 10.
 
-The following commands were used:
+## The following commands were used:
 
 enable
 configure terminal
@@ -143,7 +143,7 @@ ping 192.168.10.1
 
 The laptop successfully received replies from the router.
 
-Result
+## Result
 
 The problem was successfully resolved.
 
