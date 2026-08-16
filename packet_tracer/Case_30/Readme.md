@@ -33,7 +33,7 @@ Switch
    | Copper Straight-Through
    ↓
 Router
-
+ ```text
 
 Network Configuration
 Router
