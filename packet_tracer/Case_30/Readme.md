@@ -34,7 +34,8 @@ Switch
    ↓
 Router
  
-
+---
+```
 Network Configuration
 Router
 
