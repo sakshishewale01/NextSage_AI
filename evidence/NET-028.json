@@ -1,0 +1,35 @@
+{
+    "case_id": "NET-028",
+    "source": {
+        "readme": "packet_tracer\\Case_28\\Readme.md",
+        "case_folder": "packet_tracer\\Case_28",
+        "screenshots": [
+            "Screenshot 2026-08-16 162202.png",
+            "Screenshot 2026-08-16 162408.png",
+            "Screenshot 2026-08-16 162543.png",
+            "Screenshot 2026-08-16 162623.png"
+        ]
+    },
+    "case_title": "Wrong Wi-Fi Password",
+    "problem": "The laptop can see the Wi-Fi network but cannot authenticate because the wireless password is incorrect.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [],
+        "ip_addresses_found": [],
+        "network_information": {
+            "subnet_masks": [],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "SSID": "CampusWiFi",
+            "Wi-Fi Password": "Cisco123",
+            "Access Point Password": "Cisco123",
+            "Laptop Password": "Wrong123"
+        }
+    },
+    "structured_evidence": {},
+    "root_cause": "The wireless client was using a different password from the Access Point.",
+    "solution": "",
+    "actual_evidence": "# NET-028 – Wrong Wi-Fi Password\n\n## Problem\n\nThe laptop can see the Wi-Fi network but cannot authenticate because the wireless password is incorrect.\n\n## Topology\n\n- 1 Access Point\n- 1 Laptop\n\n## Access Point Configuration\n\nSSID:\n\n`CampusWiFi`\n\nWi-Fi Password:\n\n`Cisco123`\n\n## Problem Created\n\nThe laptop was configured with the wrong Wi-Fi password:\n\n`Wrong123`\n\nThe password did not match the password configured on the Access Point.\n\n## Observed Problem\n\nThe laptop could see the Wi-Fi network but authentication failed because the password was incorrect.\n\n## Root Cause\n\nThe wireless client was using a different password from the Access Point.\n\n## text\nAccess Point Password: Cisco123\nLaptop Password: Wrong123\n\nSolution\n\nThe laptop password was changed to the correct password:\n\nCisco123\n\nResult\n\nThe laptop successfully authenticated and connected to the Access Point.\n\n## What I Learned\nA Wi-Fi network can be visible even when the password is incorrect.\nThe wireless client must use the correct security key/password.\nIf the password does not match the Access Point, authentication fails.\nEntering the correct Wi-Fi password restores the connection."
+}

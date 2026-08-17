@@ -1,0 +1,46 @@
+{
+    "case_id": "NET-021",
+    "source": {
+        "readme": "packet_tracer\\Case_21\\Readme.md",
+        "case_folder": "packet_tracer\\Case_21",
+        "screenshots": []
+    },
+    "case_title": "ACL Blocks Ping",
+    "problem": "The network was working normally, but an Access Control List (ACL) was configured to block ICMP traffic. As a result, the PC could no longer ping the server.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "ping 192.168.22.10",
+            "show access-lists",
+            "show running-config"
+        ],
+        "ip_addresses_found": [
+            "192.168.21.1",
+            "255.255.255.0",
+            "192.168.22.1",
+            "192.168.21.10",
+            "192.168.22.10"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "The result was": "Reply from 192.168.22.10",
+            "Packets": "Sent = 4, Received = 0, Lost = 4 (100% loss)",
+            "The ACL configuration was checked using": "show access-lists",
+            "The configuration contains": "Extended IP access list 100",
+            "The applied ACL was verified using": "show running-config",
+            "The interface configuration contains": "interface GigabitEthernet0/1"
+        }
+    },
+    "structured_evidence": {
+        "icmp_allowed": false
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-021 – ACL Blocks Ping\n\n## Problem\nThe network was working normally, but an Access Control List (ACL) was configured to block ICMP traffic. As a result, the PC could no longer ping the server.\n\n## Topology\n- 1 Cisco 1941 Router\n- 2 Cisco 2960 Switches\n- 1 PC\n- 1 Server\n- PC0 → Switch0 → R1 → Switch1 → Server0\n\n## IP Configuration\n\n**R1 G0/0:** `192.168.21.1 / 255.255.255.0` \n**R1 G0/1:** `192.168.22.1 / 255.255.255.0`\n\n**PC0:** `192.168.21.10 / 255.255.255.0` \n**Default Gateway:** `192.168.21.1`\n\n**Server0:** `192.168.22.10 / 255.255.255.0` \n**Default Gateway:** `192.168.22.1`\n\n## Initial Verification\n\nBefore applying the ACL, connectivity between PC0 and Server0 was tested using:\n\n```bash\nping 192.168.22.10\n\n```\n\nThe result was:\n\nReply from 192.168.22.10\nPackets: Sent = 4, Received = 4, Lost = 0 (0% loss)\n\nThis confirmed that the network was working correctly before the fault was introduced.\n\n## Fault Creation\n\nAn extended ACL numbered 100 was created on R1 to deny ICMP traffic:\n\nconfigure terminal\naccess-list 100 deny icmp any any\naccess-list 100 permit ip any any\n\nThe ACL was then applied to the interface connected toward the server LAN:\n\ninterface gigabitEthernet 0/1\nip access-group 100 out\nexit\nend\nVerification\n\nThe ACL configuration was checked using:\n\nshow access-lists\n\nThe configuration contains:\n\nExtended IP access list 100\n deny icmp any any\n permit ip any any\n\nThe applied ACL was verified using:\n\nshow running-config\n\nThe interface configuration contains:\n\ninterface GigabitEthernet0/1\n ip access-group 100 out\nFault Testing\n\nAfter applying the ACL, PC0 attempted to ping the server again:\n\nping 192.168.22.10\n\n## The result was:\n\nReply from 192.168.21.1: Destination host unreachable.\nPackets: Sent = 4, Received = 0, Lost = 4 (100% loss)\n\nThe ping failure confirms that ICMP traffic is being blocked by the ACL.\n\nSuccessful Ping Before ACL\n\nFailed Ping After ACL\n\nACL Configuration\n\n## Result\n\nThe ACL fault was successfully created. Before applying the ACL, PC0 could communicate with Server0 successfully. After applying ACL 100 to R1 GigabitEthernet0/1, ICMP traffic was denied and the ping from PC0 to Server0 failed with 100% packet loss.\n\n## What I Learned\nHow Access Control Lists (ACLs) work\nHow to create an extended ACL\nHow to deny ICMP traffic using an ACL\nHow to permit other IP traffic using an ACL\nHow to apply an ACL to a router interface\nHow to verify ACL configuration using show access-lists\nHow to verify interface ACL configuration using show running-config\nHow to test the effect of an ACL using ping"
+}

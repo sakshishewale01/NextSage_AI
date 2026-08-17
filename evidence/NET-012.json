@@ -1,0 +1,54 @@
+{
+    "case_id": "NET-012",
+    "source": {
+        "readme": "packet_tracer\\Case_12\\Readme.md",
+        "case_folder": "packet_tracer\\Case_12",
+        "screenshots": []
+    },
+    "case_title": "Wrong DHCP Gateway",
+    "problem": "The DHCP server was configured with the wrong default gateway.\n\nThe LAN network is `192.168.12.0/24` and the actual router gateway is `192.168.12.1`. However, the DHCP pool was intentionally configured to provide `192.168.12.254` as the default gateway.\n\nAs a result, the PC receives a valid IP address but is given an incorrect gateway and cannot properly reach the remote network.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "show running-config",
+            "show ip interface brief"
+        ],
+        "ip_addresses_found": [
+            "192.168.12.0",
+            "192.168.12.1",
+            "192.168.12.254",
+            "255.255.255.0",
+            "192.168.12.2"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": [
+                "192.168.12.0/24"
+            ]
+        },
+        "key_value_information": {
+            "Connectivity to the router was also verified using": "ping 192.168.12.1",
+            "Result": "4 packets received, 0% packet loss. ✅",
+            "The actual router IP is": "192.168.12.1",
+            "The DHCP clients are incorrectly receiving": "192.168.12.254",
+            "The DHCP configuration was checked using": "do show running-config",
+            "The configuration showed": "ip dhcp pool LANPOOL",
+            "The router interface was verified using": "do show ip interface brief",
+            "Actual Router IP": "192.168.12.1",
+            "LAN Network": "192.168.12.0/24",
+            "DHCP Network": "192.168.12.0/24",
+            "DHCP Default Gateway": "192.168.12.254 ← WRONG"
+        }
+    },
+    "structured_evidence": {
+        "pool_exists": true,
+        "network": "192.168.12.0 255.255.255.0",
+        "default_router": "192.168.12.1"
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-012 – Wrong DHCP Gateway\n\n## Problem\n\nThe DHCP server was configured with the wrong default gateway.\n\nThe LAN network is `192.168.12.0/24` and the actual router gateway is `192.168.12.1`. However, the DHCP pool was intentionally configured to provide `192.168.12.254` as the default gateway.\n\nAs a result, the PC receives a valid IP address but is given an incorrect gateway and cannot properly reach the remote network.\n\n## Topology\n\n- 1 Cisco 1941 Router\n- 1 Cisco 2960-24TT Switch\n- 1 PC\n- PC0 → Switch0 → Router0\n- PC0 Fa0 → Switch0 Fa0/1\n- Switch0 Gi0/1 → Router0 Gi0/0\n\n## Cable Configuration\n\n**PC0 → Switch0**\n\n- PC0 FastEthernet0\n- Switch0 FastEthernet0/1\n- Cable: Copper Straight-Through\n\n**Switch0 → Router0**\n\n- Switch0 GigabitEthernet0/1\n- Router0 GigabitEthernet0/0\n- Cable: Copper Straight-Through\n\n## IP Configuration\n\n**Router0 GigabitEthernet0/0:**\n\n`192.168.12.1 / 255.255.255.0`\n\n**Correct LAN Network:**\n\n`192.168.12.0 / 24`\n\n**PC0:**\n\nConfigured to obtain its IP address automatically using DHCP.\n\n## Correct DHCP Configuration\n\nThe network was first configured correctly using:\n\n```bash\nip dhcp excluded-address 192.168.12.1\n\nip dhcp pool LANPOOL\nnetwork 192.168.12.0 255.255.255.0\ndefault-router 192.168.12.1\n\nThe correct configuration was verified and PC0 successfully received an IP address from the DHCP server.\n\nConnectivity to the router was also verified using:\n\nping 192.168.12.1\n\nResult: 4 packets received, 0% packet loss. ✅\n\nFault Created\n\nAfter verifying the correct connection, the DHCP gateway was intentionally changed to an incorrect address:\n\nip dhcp pool LANPOOL\nnetwork 192.168.12.0 255.255.255.0\ndefault-router 192.168.12.254\n\nThe network address remains correct, but the DHCP default gateway is incorrect.\n\nThe actual router IP is:\n\n192.168.12.1\n\nThe DHCP clients are incorrectly receiving:\n\n192.168.12.254\n\nas their default gateway.\n\nVerification\n\nThe DHCP configuration was checked using:\n\ndo show running-config\n\nThe configuration showed:\n\nip dhcp pool LANPOOL\n network 192.168.12.0 255.255.255.0\n default-router 192.168.12.254\n\nThe router interface was verified using:\n\ndo show ip interface brief\n\nThe router's actual LAN address was confirmed as:\n\nGigabitEthernet0/0 192.168.12.1 up up\nPC Verification\n\nOn PC0, the DHCP configuration was refreshed using:\n\nipconfig /release\nipconfig /renew\nipconfig\n\nThe PC received a valid IP address, for example:\n\nIPv4 Address.............: 192.168.12.2\nSubnet Mask..............: 255.255.255.0\nDefault Gateway..........: 192.168.12.254\n\nThe exact IP address may be different depending on DHCP allocation.\n\nThe important point is that the PC receives a valid IP address but the default gateway is wrong.\n\nExpected Fault\nActual Router IP : 192.168.12.1\nLAN Network : 192.168.12.0/24\nDHCP Network : 192.168.12.0/24\nDHCP Default Gateway : 192.168.12.254 ← WRONG\n\nThis reproduces the NET-012 – Wrong DHCP Gateway fault.\n\nExpected Fix\n\nThe DHCP default gateway should be corrected to the actual router interface:\n\nip dhcp pool LANPOOL\ndefault-router 192.168.12.1\n\nThe fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.\n\nScreenshots\nTopology\n\nCorrect Connection Verification\n\nWrong DHCP Gateway Configuration\n\nRunning Configuration\n\nPC IP Configuration\n\nPing Verification\n\nResult\n\nThe NET-012 – Wrong DHCP Gateway fault was successfully created.\n\nThe DHCP server provides a valid IP address to the PC, but the DHCP pool supplies an incorrect default gateway (192.168.12.254) instead of the actual router gateway (192.168.12.1).\n\nThis reproduces the condition where the PC gets an IP but cannot reach the remote network because the DHCP default gateway is incorrect."
+}

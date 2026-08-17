@@ -1,0 +1,57 @@
+{
+    "case_id": "NET-020",
+    "source": {
+        "readme": "packet_tracer\\Case_20\\Readme.md",
+        "case_folder": "packet_tracer\\Case_20",
+        "screenshots": [
+            "Screenshot 2026-08-16 223718.png"
+        ]
+    },
+    "case_title": "Missing Default Route",
+    "problem": "The default route was missing on the edge router, so the PC could communicate with its local router but could not reach the remote network.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "interface gigabitEthernet 0/0",
+            "ip address 192.168.20.1 255.255.255.0",
+            "no shutdown",
+            "show ip route"
+        ],
+        "ip_addresses_found": [
+            "192.168.20.10",
+            "255.255.255.0",
+            "192.168.20.1",
+            "10.0.0.1",
+            "255.255.255.252",
+            "10.0.0.2",
+            "172.16.0.1",
+            "172.16.0.10",
+            "10.0.0.0"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": [
+                "10.0.0.0/30"
+            ]
+        },
+        "key_value_information": {
+            "R2 was configured with": "interface gigabitEthernet 0/0",
+            "The R1-R2 connection was tested using": "ping 10.0.0.2",
+            "Result": "4 packets lost, 100% loss. ❌",
+            "PC0 was tested against its local gateway": "ping 192.168.20.1",
+            "The remote network was then tested": "ping 172.16.0.10",
+            "The result was": "Reply from 192.168.20.1: Destination host unreachable.",
+            "The routing table on R1 was checked using": "show ip route"
+        }
+    },
+    "structured_evidence": {
+        "route_exists": false,
+        "default_route_exists": false
+    },
+    "root_cause": "",
+    "solution": "The network was configured with two routers connected through the `10.0.0.0/30` network.\n\nR1 was configured with:\n\n```bash\ninterface gigabitEthernet 0/0\nip address 192.168.20.1 255.255.255.0\nno shutdown\n\n```\n\ninterface gigabitEthernet 0/1\nip address 10.0.0.1 255.255.255.252\nno shutdown\n\nR2 was configured with:\n\ninterface gigabitEthernet 0/0\nip address 172.16.0.1 255.255.255.0\nno shutdown\n\ninterface gigabitEthernet 0/1\nip address 10.0.0.2 255.255.255.252\nno shutdown\n\nThe default route was intentionally left missing on R1 to demonstrate the fault.\n\nVerification\n\nThe R1-R2 connection was tested using:\n\nping 10.0.0.2\n\nResult: Successful connectivity between R1 and R2. ✅\n\nPC0 was tested against its local gateway:\n\nping 192.168.20.1\n\nResult: 4 packets received, 0% packet loss. ✅\n\nThe remote network was then tested:\n\nping 172.16.0.10\n\nThe result was:\n\nReply from 192.168.20.1: Destination host unreachable.\n\nResult: 4 packets lost, 100% loss. ❌\n\nThe routing table on R1 was checked using:\n\nshow ip route\n\nThe routing table showed that no default route was configured.\n\nR1 Routing Table\n\nPC0 Local Gateway Ping\n\nRemote Network Ping Failure",
+    "actual_evidence": "# NET-020 – Missing Default Route\n\n## Problem\nThe default route was missing on the edge router, so the PC could communicate with its local router but could not reach the remote network.\n\n## Topology\n- 2 Cisco 1941 Routers\n- 2 Cisco 2960 Switches\n- 2 PCs\n- PC0 → Switch0 → R1\n- R1 → R2\n- R2 → Switch1 → PC1\n\n## IP Configuration\n\n**PC0:** `192.168.20.10 / 255.255.255.0` \n**R1 G0/0:** `192.168.20.1 / 255.255.255.0` \n**R1 G0/1:** `10.0.0.1 / 255.255.255.252` \n**R2 G0/1:** `10.0.0.2 / 255.255.255.252` \n**R2 G0/0:** `172.16.0.1 / 255.255.255.0` \n**PC1:** `172.16.0.10 / 255.255.255.0`\n\n## Solution\n\nThe network was configured with two routers connected through the `10.0.0.0/30` network.\n\nR1 was configured with:\n\n```bash\ninterface gigabitEthernet 0/0\nip address 192.168.20.1 255.255.255.0\nno shutdown\n\n```\n\ninterface gigabitEthernet 0/1\nip address 10.0.0.1 255.255.255.252\nno shutdown\n\nR2 was configured with:\n\ninterface gigabitEthernet 0/0\nip address 172.16.0.1 255.255.255.0\nno shutdown\n\ninterface gigabitEthernet 0/1\nip address 10.0.0.2 255.255.255.252\nno shutdown\n\nThe default route was intentionally left missing on R1 to demonstrate the fault.\n\nVerification\n\nThe R1-R2 connection was tested using:\n\nping 10.0.0.2\n\nResult: Successful connectivity between R1 and R2. ✅\n\nPC0 was tested against its local gateway:\n\nping 192.168.20.1\n\nResult: 4 packets received, 0% packet loss. ✅\n\nThe remote network was then tested:\n\nping 172.16.0.10\n\nThe result was:\n\nReply from 192.168.20.1: Destination host unreachable.\n\nResult: 4 packets lost, 100% loss. ❌\n\nThe routing table on R1 was checked using:\n\nshow ip route\n\nThe routing table showed that no default route was configured.\n\nR1 Routing Table\n\nPC0 Local Gateway Ping\n\nRemote Network Ping Failure\n\n## Result\n\nThe missing default route fault was successfully created and demonstrated. PC0 could communicate with its local router, and R1 could communicate with R2, but PC0 could not reach the remote network because R1 did not have a default route.\n\n## What I Learned\nHow routers use routing tables to forward packets\nHow to configure router interfaces\nHow to verify routes using show ip route\nHow a missing default route can prevent communication with unknown networks\nHow to test connectivity using ping\nHow to identify a routing problem from a Destination host unreachable message"
+}

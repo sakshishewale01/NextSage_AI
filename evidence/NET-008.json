@@ -1,0 +1,53 @@
+{
+    "case_id": "NET-008",
+    "source": {
+        "readme": "packet_tracer\\Case_08\\Readme.md",
+        "case_folder": "packet_tracer\\Case_08",
+        "screenshots": [
+            "image.png",
+            "image-1.png"
+        ]
+    },
+    "case_title": "Gateway Interface Down",
+    "problem": "The PC cannot ping its default gateway because the router's LAN interface is administratively shut down.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "The router interface status was checked using:\n\n```bash\nshow ip interface brief\n```\n\nThe output showed:\n\n```text\nGigabitEthernet0/0 192.168.10.1 administratively down\n```\n\nThis is the main evidence for the case.",
+        "commands": [
+            "enable",
+            "configure terminal",
+            "interface gigabitEthernet 0/0",
+            "ip address 192.168.10.1 255.255.255.0",
+            "no shutdown",
+            "exit",
+            "ping 192.168.10.1",
+            "show ip interface brief",
+            "ping 192.168.10.1 → Failed ❌",
+            "ping 192.168.10.1 → Successful ✅"
+        ],
+        "ip_addresses_found": [
+            "192.168.10.10",
+            "255.255.255.0",
+            "192.168.10.1"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "IP Address": "192.168.10.1",
+            "Subnet Mask": "255.255.255.0",
+            "Default Gateway": "192.168.10.1",
+            "Before Fix": "ping 192.168.10.1 → Failed ❌",
+            "After Fix": "ping 192.168.10.1 → Successful ✅"
+        }
+    },
+    "structured_evidence": {
+        "interface_status": "down"
+    },
+    "root_cause": "",
+    "solution": "The router interface was enabled using:\n\n```bash\nconfigure terminal\ninterface gigabitEthernet 0/0\nno shutdown\n```\n\nThe expected result is:\n\n```text\nGigabitEthernet0/0 192.168.10.1 up up\n```",
+    "actual_evidence": "The router interface status was checked using:\n\n```bash\nshow ip interface brief\n```\n\nThe output showed:\n\n```text\nGigabitEthernet0/0 192.168.10.1 administratively down\n```\n\nThis is the main evidence for the case."
+}

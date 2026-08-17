@@ -1,0 +1,60 @@
+{
+    "case_id": "NET-026",
+    "source": {
+        "readme": "packet_tracer\\Case_26\\Readme.md",
+        "case_folder": "packet_tracer\\Case_26",
+        "screenshots": [
+            "Screenshot 2026-08-16 153751.png",
+            "Screenshot 2026-08-16 153937.png",
+            "Screenshot 2026-08-16 154156.png"
+        ]
+    },
+    "case_title": "NAT ACL Wrong",
+    "problem": "One private PC is translated by NAT, but another private PC is not translated.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "show access-lists",
+            "show ip nat translations"
+        ],
+        "ip_addresses_found": [
+            "192.168.10.10",
+            "255.255.255.0",
+            "192.168.10.1",
+            "192.168.10.11",
+            "192.168.20.1",
+            "192.168.20.10",
+            "192.168.10.0",
+            "0.0.0.255"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "IP Address": "192.168.20.10",
+            "Subnet Mask": "255.255.255.0",
+            "Default Gateway": "192.168.20.1",
+            "G0/0": "192.168.10.1",
+            "G0/1": "192.168.20.1",
+            "Therefore": "PC0 → NAT allowed",
+            "The ACL was checked using": "show access-lists",
+            "The ACL only permitted": "192.168.10.10",
+            "but PC1 had": "192.168.10.11",
+            "The incorrect ACL was removed": "no access-list 1",
+            "The corrected ACL was checked using": "show access-lists",
+            "Traffic was generated from PC1": "ping 192.168.20.10",
+            "The NAT translation table was checked again": "show ip nat translations"
+        }
+    },
+    "structured_evidence": {
+        "nat_configured": true,
+        "acl_matches": false
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-026 – NAT ACL Wrong\n\n## Problem\n\nOne private PC is translated by NAT, but another private PC is not translated.\n\n## Topology\n\n```text\nPC0 ──┐\n │\nPC1 ──┼── Switch0 ── Router0 ── Server0\n\nIP Addressing\nPC0\nIP Address: 192.168.10.10\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.10.1\nPC1\nIP Address: 192.168.10.11\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.10.1\nRouter0\nG0/0: 192.168.10.1\nG0/1: 192.168.20.1\nServer0\nIP Address: 192.168.20.10\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.20.1\nProblem Creation\n\nThe NAT ACL was intentionally configured to allow only PC0:\n\naccess-list 1 permit host 192.168.10.10\n\nTherefore:\n\nPC0 → NAT allowed\nPC1 → NAT not allowed\nEvidence\n\nThe ACL was checked using:\n\nshow access-lists\n\nThe ACL only allowed PC0.\n\nTraffic was generated from both PCs and the NAT table was checked using:\n\nshow ip nat translations\n\nPC0 produced a NAT translation, while PC1 was not included because it was not permitted by the ACL.\n\nRoot Cause\n\nThe NAT ACL did not include PC1.\n\nThe ACL only permitted:\n\n192.168.10.10\n\nbut PC1 had:\n\n192.168.10.11\n\nTherefore, PC1 did not match the NAT ACL.\n\nSolution\n\nThe incorrect ACL was removed:\n\nno access-list 1\n\nA new ACL was created for the complete private network:\n\naccess-list 1 permit 192.168.10.0 0.0.0.255\n\nThis allows both PC0 and PC1 to be translated.\n\nVerification\n\nThe corrected ACL was checked using:\n\nshow access-lists\n\nTraffic was generated from PC1:\n\nping 192.168.20.10\n\nThe NAT translation table was checked again:\n\nshow ip nat translations\n\nPC1 was now eligible for NAT translation.\n\nResult\n\nThe NAT ACL mismatch was successfully identified and corrected.\n\nInitially, the ACL allowed only PC0. After changing the ACL to allow the complete private network, both PCs were allowed to participate in NAT.\n\nWhat I Learned\nWhat a NAT ACL does.\nHow an ACL controls which private addresses are translated.\nHow to check an ACL using show access-lists.\nHow to check NAT translations using show ip nat translations.\nHow to correct a NAT ACL mismatch."
+}

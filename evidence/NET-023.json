@@ -1,0 +1,49 @@
+{
+    "case_id": "NET-023",
+    "source": {
+        "readme": "packet_tracer\\Case_23\\Readme.md",
+        "case_folder": "packet_tracer\\Case_23",
+        "screenshots": []
+    },
+    "case_title": "ACL Wrong Interface/Direction",
+    "problem": "An ACL was applied to the wrong interface and direction on the router, causing network traffic to be blocked unexpectedly.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "access-list 101 deny ip 192.168.23.0 0.0.0.255 192.168.22.0 0.0.0.255",
+            "access-list 101 permit ip any any",
+            "show access-lists",
+            "show running-config"
+        ],
+        "ip_addresses_found": [
+            "192.168.22.10",
+            "255.255.255.0",
+            "192.168.22.1",
+            "192.168.23.1",
+            "192.168.23.10",
+            "192.168.23.0",
+            "0.0.0.255",
+            "192.168.22.0"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "The ACL configuration was checked using": "show access-lists",
+            "The interface configuration was checked using": "show running-config",
+            "Connectivity was tested from PC0 using": "ping 192.168.23.10",
+            "The result was": "Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)",
+            "Result": "Traffic was blocked unexpectedly. ❌"
+        }
+    },
+    "structured_evidence": {
+        "placement_correct": false
+    },
+    "root_cause": "",
+    "solution": "An extended ACL was created to deny traffic from the server network to the PC network:\n\n```bash\naccess-list 101 deny ip 192.168.23.0 0.0.0.255 192.168.22.0 0.0.0.255\naccess-list 101 permit ip any any\n\n```\nThe ACL was intentionally applied to the wrong interface and direction to create the fault:\n\ninterface gigabitEthernet 0/0\nip access-group 101 out\n\nThis caused traffic from PC0 toward the remote server network to be blocked unexpectedly.\n\nVerification\n\nThe ACL configuration was checked using:\n\nshow access-lists\n\nThe interface configuration was checked using:\n\nshow running-config\n\nThe configuration confirmed that ACL 101 was applied to GigabitEthernet0/0 in the outbound direction:\n\ninterface GigabitEthernet0/0\nip access-group 101 out\n\nConnectivity was tested from PC0 using:\n\nping 192.168.23.10\n\nThe result was:\n\nPackets: Sent = 4, Received = 0, Lost = 4 (100% loss)\n\nResult: Traffic was blocked unexpectedly. ❌\n\nPing Verification",
+    "actual_evidence": "# NET-023 – ACL Wrong Interface/Direction\n\n## Problem\nAn ACL was applied to the wrong interface and direction on the router, causing network traffic to be blocked unexpectedly.\n\n## Topology\n- 1 Cisco 1941 Router\n- 2 Cisco 2960 Switches\n- 1 PC\n- 1 Server\n- PC0 → Switch0 → R1 → Switch1 → Server0\n\n## IP Configuration\n\n**PC0:** `192.168.22.10 / 255.255.255.0` \n**R1 GigabitEthernet0/0:** `192.168.22.1 / 255.255.255.0` \n**R1 GigabitEthernet0/1:** `192.168.23.1 / 255.255.255.0` \n**Server0:** `192.168.23.10 / 255.255.255.0`\n\n## Solution\n\nAn extended ACL was created to deny traffic from the server network to the PC network:\n\n```bash\naccess-list 101 deny ip 192.168.23.0 0.0.0.255 192.168.22.0 0.0.0.255\naccess-list 101 permit ip any any\n\n```\nThe ACL was intentionally applied to the wrong interface and direction to create the fault:\n\ninterface gigabitEthernet 0/0\nip access-group 101 out\n\nThis caused traffic from PC0 toward the remote server network to be blocked unexpectedly.\n\nVerification\n\nThe ACL configuration was checked using:\n\nshow access-lists\n\nThe interface configuration was checked using:\n\nshow running-config\n\nThe configuration confirmed that ACL 101 was applied to GigabitEthernet0/0 in the outbound direction:\n\ninterface GigabitEthernet0/0\nip access-group 101 out\n\nConnectivity was tested from PC0 using:\n\nping 192.168.23.10\n\nThe result was:\n\nPackets: Sent = 4, Received = 0, Lost = 4 (100% loss)\n\nResult: Traffic was blocked unexpectedly. ❌\n\nPing Verification\n\n## Result\n\nThe ACL was successfully configured and intentionally applied to the wrong interface and direction. As a result, communication from PC0 to the server network was blocked, successfully reproducing the NET-023 fault condition.\n\n## What I Learned\nHow to create an extended ACL\nHow to apply an ACL to a router interface\nHow inbound and outbound ACL directions affect traffic\nHow an ACL applied to the wrong interface can block valid traffic\nHow to verify ACL configuration using show access-lists\nHow to verify interface ACL placement using show running-config\nHow to test network connectivity using ping"
+}

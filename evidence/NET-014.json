@@ -1,0 +1,55 @@
+{
+    "case_id": "NET-014",
+    "source": {
+        "readme": "packet_tracer\\Case_14\\Readme.md",
+        "case_folder": "packet_tracer\\Case_14",
+        "screenshots": [
+            "Screenshot 2026-08-16 221437.png",
+            "Screenshot 2026-08-16 221442.png"
+        ]
+    },
+    "case_title": "Wrong DNS Server",
+    "problem": "PC0 was configured with an incorrect DNS server address. IP connectivity to the DNS server works when the correct DNS address is used, but hostname resolution fails when an incorrect DNS server is configured.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [],
+        "ip_addresses_found": [
+            "192.168.14.10",
+            "255.255.255.0",
+            "192.168.14.2",
+            "192.168.14.99"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "IP Address": "192.168.14.10",
+            "Subnet Mask": "255.255.255.0",
+            "DNS Server": "192.168.14.99",
+            "Connectivity to the DNS server was tested using": "ping 192.168.14.2",
+            "Result": "Request timed out. ❌",
+            "Hostname resolution was also verified using": "ping www.test.com",
+            "The hostname successfully resolved to": "192.168.14.2",
+            "The correct DNS server is": "192.168.14.2",
+            "The incorrect DNS server is": "192.168.14.99",
+            "The faulty DNS configuration was verified using": "ipconfig",
+            "The PC configuration showed": "IPv4 Address: 192.168.14.10",
+            "The incorrect DNS server was tested using": "ping 192.168.14.99",
+            "Hostname resolution was tested using": "ping www.test.com",
+            "The result was": "Ping request could not find host www.test.com.",
+            "PC IP Address": "192.168.14.10",
+            "Correct DNS Server": "192.168.14.2",
+            "Configured DNS": "192.168.14.99 ← WRONG"
+        }
+    },
+    "structured_evidence": {
+        "dns_server": "192.168.14.2"
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-014 – Wrong DNS Server\n\n## Problem\n\nPC0 was configured with an incorrect DNS server address. IP connectivity to the DNS server works when the correct DNS address is used, but hostname resolution fails when an incorrect DNS server is configured.\n\n## Topology\n\n- 1 PC\n- 1 Cisco 2960 Switch\n- 1 DNS Server\n- PC0 → Switch0\n- Switch0 → Server0\n\n## IP Configuration\n\n**PC0:** `192.168.14.10 / 255.255.255.0`\n\n**Server0:** `192.168.14.2 / 255.255.255.0`\n\n**Correct DNS Server:** `192.168.14.2`\n\n**Faulty DNS Server:** `192.168.14.99`\n\nNo router is used in this test case because the PC and DNS server are on the same LAN.\n\n## Correct Configuration Verification\n\nBefore creating the fault, the correct DNS configuration was verified.\n\nPC0 was configured with:\n\n```text\nIP Address: 192.168.14.10\nSubnet Mask: 255.255.255.0\nDNS Server: 192.168.14.2\n\n```\nConnectivity to the DNS server was tested using:\n\nping 192.168.14.2\n\nResult: 4 packets received, 0% packet loss. ✅\n\nHostname resolution was also verified using:\n\nping www.test.com\n\nThe hostname successfully resolved to:\n\n192.168.14.2\n\nThis confirmed that the original DNS configuration was working correctly.\n\n## Fault Created\n\nAfter verifying the correct configuration, the DNS server address on PC0 was intentionally changed to an incorrect address:\n\nDNS Server: 192.168.14.99\n\nThe correct DNS server is:\n\n192.168.14.2\n\nThe incorrect DNS server is:\n\n192.168.14.99\n\nOnly the DNS server address was changed. The PC IP address and subnet mask remained unchanged.\n\nVerification\n\nThe faulty DNS configuration was verified using:\n\nipconfig\n\nThe PC configuration showed:\n\nIPv4 Address: 192.168.14.10\nSubnet Mask: 255.255.255.0\nDNS Server: 192.168.14.99\n\nIP connectivity to the actual DNS server was tested using:\n\nping 192.168.14.2\n\nResult: 4 packets received, 0% packet loss. ✅\n\nThe incorrect DNS server was tested using:\n\nping 192.168.14.99\n\nResult: Request timed out. ❌\n\nHostname resolution was tested using:\n\nping www.test.com\n\nThe result was:\n\nPing request could not find host www.test.com.\nPlease check the name and try again.\n\nThis confirmed that the PC could communicate with the network, but hostname resolution failed because the DNS server address was incorrect.\n\n## Expected Fault\nPC IP Address : 192.168.14.10\nSubnet Mask : 255.255.255.0\nCorrect DNS Server : 192.168.14.2\nConfigured DNS : 192.168.14.99 ← WRONG\n\nThis reproduces the NET-014 – Wrong DNS Server fault.\n\nExpected Fix\n\nThe DNS server address on PC0 should be corrected to:\n\n192.168.14.2\n\nThe fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.\n\n## Topology\n\nCorrect DNS Configuration\n\nCorrect DNS Verification\n\nWrong DNS Configuration\n\nFault Verification\n\n## Result\n\nThe NET-014 – Wrong DNS Server fault was successfully created.\n\nPC0 has a valid IP configuration and can communicate with the DNS server at 192.168.14.2, but it cannot resolve www.test.com because the configured DNS server address 192.168.14.99 is incorrect.\n\nThis successfully reproduces the condition where IP connectivity works but hostname resolution fails due to a wrong DNS server address.\n\n## What I Learned\nHow DNS works in a local network\nHow to configure a DNS server address on a PC\nHow to verify IP connectivity using ping\nHow to test hostname resolution using ping\nHow an incorrect DNS server affects hostname resolution\nHow to identify a wrong DNS server configuration\nHow to create and verify a DNS troubleshooting fault in Cisco Packet Tracer"
+}

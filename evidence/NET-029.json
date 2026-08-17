@@ -1,0 +1,44 @@
+{
+    "case_id": "NET-029",
+    "source": {
+        "readme": "packet_tracer\\Case_29\\Readme.md",
+        "case_folder": "packet_tracer\\Case_29",
+        "screenshots": [
+            "screenshots/03-laptop-no-ip.png",
+            "Screenshot 2026-08-16 170251.png",
+            "Screenshot 2026-08-16 170349.png",
+            "Screenshot 2026-08-16 170440.png"
+        ]
+    },
+    "case_title": "Wireless Client Gets No IP",
+    "problem": "The laptop can connect to the wireless network, but it does not receive a usable IP address.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [],
+        "ip_addresses_found": [
+            "192.168.30.1",
+            "192.168.30.0",
+            "255.255.255.0"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "Router LAN IP": "192.168.30.1",
+            "Wireless SSID": "CampusWiFi",
+            "Example": "IPv4 Address: 192.168.30.x",
+            "Subnet Mask": "255.255.255.0",
+            "Default Gateway": "192.168.30.1"
+        }
+    },
+    "structured_evidence": {
+        "dhcp_working": false
+    },
+    "root_cause": "The DHCP service was not configured for the wireless network.\n\nThe laptop requested an IP address, but there was no DHCP pool available to provide one.",
+    "solution": "A DHCP pool was created on the router.",
+    "actual_evidence": "# NET-029 – Wireless Client Gets No IP\n\n## Problem\n\nThe laptop can connect to the wireless network, but it does not receive a usable IP address.\n\n## Topology\n\n- 1 Router\n- 1 Access Point\n- 1 Laptop\n\n## Network Configuration\n\nRouter LAN IP:\n\n`192.168.30.1`\n\nWireless SSID:\n\n`CampusWiFi`\n\n## Problem Created\n\nThe router interface was configured with an IP address, but DHCP was not configured.\n\nTherefore, the laptop could connect to the Access Point but could not receive a usable IP address.\n\n![Laptop No IP](screenshots/03-laptop-no-ip.png)\n\n## Root Cause\n\nThe DHCP service was not configured for the wireless network.\n\nThe laptop requested an IP address, but there was no DHCP pool available to provide one.\n\n## Solution\n\nA DHCP pool was created on the router.\n\n## text\n\nip dhcp pool WIFI\n\nnetwork 192.168.30.0 255.255.255.0\n\ndefault-router 192.168.30.1\n\nResult\n\nThe laptop successfully received an IP address from the DHCP server.\n\nExample:\n\nIPv4 Address: 192.168.30.x\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.30.1\n\nConnectivity Test\n\nThe laptop successfully pinged the router.\n\nConclusion\n\nThe problem was caused by missing DHCP configuration.\n\nAfter configuring DHCP on the router, the wireless client successfully received an IP address and communicated with the router.\n\n## What I Learned\n\nA device can connect to Wi-Fi without having a usable IP address.\n\nDHCP automatically provides IP addresses to devices.\n\nThe router can be configured as a DHCP server.\n\nipconfig can be used to check the client's IP configuration.\n\nping can be used to test connectivity."
+}

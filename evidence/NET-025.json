@@ -1,0 +1,62 @@
+{
+    "case_id": "NET-025",
+    "source": {
+        "readme": "packet_tracer\\Case_25\\Readme.md",
+        "case_folder": "packet_tracer\\Case_25",
+        "screenshots": [
+            "Screenshot 2026-08-16 151730.png",
+            "Screenshot 2026-08-16 152258.png",
+            "Screenshot 2026-08-16 152530.png"
+        ]
+    },
+    "case_title": "Wrong NAT Inside/Outside Interface",
+    "problem": "Private network traffic is not being translated because the NAT inside and outside interfaces are configured incorrectly.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "show running-config",
+            "show ip nat translations"
+        ],
+        "ip_addresses_found": [
+            "192.168.10.10",
+            "255.255.255.0",
+            "192.168.10.1",
+            "192.168.20.1",
+            "192.168.20.10"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "IP Address": "192.168.20.10",
+            "Subnet Mask": "255.255.255.0",
+            "Default Gateway": "192.168.20.1",
+            "G0/0": "192.168.10.1",
+            "G0/1": "192.168.20.1",
+            "The private interface was configured as": "G0/0 → ip nat outside",
+            "The outside interface was configured as": "G0/1 → ip nat inside",
+            "The correct configuration should be": "G0/0 → ip nat inside",
+            "The router configuration was checked using": "show running-config",
+            "The NAT translation table was also checked using": "show ip nat translations",
+            "The private interface was corrected": "interface gigabitEthernet 0/0",
+            "The outside interface was corrected": "interface gigabitEthernet 0/1",
+            "The router configuration was checked again using": "show running-config",
+            "Traffic was generated from PC0 using": "ping 192.168.20.10",
+            "The NAT translation table was checked again": "show ip nat translations"
+        }
+    },
+    "structured_evidence": {
+        "nat_configured": true,
+        "inside_role": "outside",
+        "outside_role": "inside",
+        "expected_inside_role": "inside",
+        "expected_outside_role": "outside"
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-025 – Wrong NAT Inside/Outside Interface\n\n## Problem\n\nPrivate network traffic is not being translated because the NAT inside and outside interfaces are configured incorrectly.\n\n## Topology\n\n```text\nPC0 ─── Switch0 ─── Router0 ─── Server0\n\nIP Addressing\nPC0\nIP Address: 192.168.10.10\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.10.1\nRouter0\nG0/0: 192.168.10.1\nG0/1: 192.168.20.1\nServer0\nIP Address: 192.168.20.10\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.20.1\nProblem Creation\n\nThe NAT interfaces were intentionally configured incorrectly.\n\nThe private interface was configured as:\n\nG0/0 → ip nat outside\n\nThe outside interface was configured as:\n\nG0/1 → ip nat inside\n\nThe correct configuration should be:\n\nG0/0 → ip nat inside\nG0/1 → ip nat outside\nEvidence\n\nThe router configuration was checked using:\n\nshow running-config\n\nThe NAT roles were found to be incorrect.\n\nThe NAT translation table was also checked using:\n\nshow ip nat translations\n\nThe expected NAT translation was not created.\n\nRoot Cause\n\nThe NAT inside and outside interfaces were reversed.\n\nThe private interface was incorrectly marked as outside, and the outside interface was incorrectly marked as inside.\n\nSolution\n\nThe private interface was corrected:\n\ninterface gigabitEthernet 0/0\nno ip nat outside\nip nat inside\n\nThe outside interface was corrected:\n\ninterface gigabitEthernet 0/1\nno ip nat inside\nip nat outside\nVerification\n\nThe router configuration was checked again using:\n\nshow running-config\n\nThe correct NAT roles were now visible.\n\nTraffic was generated from PC0 using:\n\nping 192.168.20.10\n\nThe NAT translation table was checked again:\n\nshow ip nat translations\n\nA NAT translation was now created.\n\nResult\n\nThe wrong NAT inside/outside interface configuration was successfully identified and corrected.\n\nAfter assigning the correct NAT roles, NAT translation worked correctly.\n\nWhat I Learned\nWhat NAT inside means.\nWhat NAT outside means.\nHow to identify inside and outside interfaces.\nHow to check NAT configuration using show running-config.\nHow to check NAT translations using show ip nat translations.\nWhy incorrect NAT interface roles can prevent NAT translation."
+}

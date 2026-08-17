@@ -1,31 +1,31 @@
 Case ID,Category,Expected Fault,Rule,Status,Finding
-NET-001,VLAN,Wrong access VLAN.,VLAN Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-002,VLAN,Required VLAN missing.,VLAN Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-003,VLAN,Ports are in different VLANs.,VLAN Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-004,VLAN,Port not assigned to intended VLAN.,VLAN Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-005,VLAN,Inter-switch link is not trunking.,VLAN Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-006,Gateway,Default gateway missing.,Gateway Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-007,Gateway,Wrong default gateway.,Gateway Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-008,Gateway,Gateway interface shutdown.,Gateway Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-009,Gateway,Gateway address mismatch.,Gateway Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-010,DHCP,DHCP pool missing.,DHCP Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-011,DHCP,Wrong DHCP network.,DHCP Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-012,DHCP,Wrong DHCP default-router.,Route Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-013,DHCP,Wrong DHCP DNS server.,DHCP Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-014,DNS,Wrong DNS server.,DNS Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-015,DNS,DNS service disabled.,DNS Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-016,DNS,DNS record missing.,DNS Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-017,Routing,Static route missing.,Route Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-018,Routing,Wrong next hop.,Route Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-019,Routing,Interface shutdown.,Interface Status Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-020,Routing,Default route missing.,Route Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-021,ACL,ACL blocks ICMP.,ACL Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-022,ACL,ACL blocks HTTP.,ACL Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-023,ACL,ACL placement is wrong.,ACL Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-024,NAT,NAT missing.,NAT Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-025,NAT,NAT interface roles wrong.,Interface Status Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-026,NAT,NAT ACL mismatch.,ACL Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-027,Wireless,Wrong SSID.,Wireless Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-028,Wireless,Wrong wireless password.,Wireless Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-029,Wireless,Wireless DHCP/network problem.,DHCP Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
-NET-030,Wireless,AP port VLAN mismatch.,VLAN Checker,NOT_CHECKED,Actual Packet Tracer evidence is required to run this rule.
+NET-001,VLAN,Wrong access VLAN.,VLAN Checker,FAIL,"Wrong access VLAN detected. Actual VLAN: 20, Expected VLAN: 10."
+NET-002,VLAN,Required VLAN missing.,VLAN Checker,PASS,Required VLAN 20 exists.
+NET-003,VLAN,Ports are in different VLANs.,VLAN Checker,NOT_CHECKED,VLAN information for both PCs is unavailable.
+NET-004,VLAN,Port not assigned to intended VLAN.,VLAN Checker,NOT_CHECKED,Actual and expected VLAN information is unavailable.
+NET-005,VLAN,Inter-switch link is not trunking.,VLAN Checker,FAIL,Inter-switch link is not trunking.
+NET-006,Gateway,Default gateway missing.,Gateway Checker,FAIL,Default gateway is missing.
+NET-007,Gateway,Wrong default gateway.,Gateway Checker,FAIL,"Wrong default gateway. Configured: 192.168.10.254, Expected: 192.168.10.1."
+NET-008,Gateway,Gateway interface shutdown.,Gateway Checker,FAIL,Gateway interface is administratively down.
+NET-009,Gateway,Gateway address mismatch.,Gateway Checker,FAIL,"Gateway IP mismatch. PC gateway: 192.168.10.254, Router LAN IP: 192.168.10.1."
+NET-010,DHCP,DHCP pool missing.,DHCP Checker,FAIL,DHCP pool is missing.
+NET-011,DHCP,Wrong DHCP network.,DHCP Checker,NOT_CHECKED,DHCP network information is unavailable.
+NET-012,DHCP,Wrong DHCP default-router.,DHCP Checker,NOT_CHECKED,DHCP default-router information is unavailable.
+NET-013,DHCP,Wrong DHCP DNS server.,DHCP Checker,NOT_CHECKED,DHCP DNS information is unavailable.
+NET-014,DNS,Wrong DNS server.,DNS Checker,NOT_CHECKED,DNS server information is unavailable.
+NET-015,DNS,DNS service disabled.,DNS Checker,NOT_CHECKED,DNS service status is unavailable.
+NET-016,DNS,DNS record missing.,DNS Checker,NOT_CHECKED,DNS record information is unavailable.
+NET-017,Routing,Static route missing.,Route Checker,FAIL,Required static route is missing.
+NET-018,Routing,Wrong next hop.,Route Checker,NOT_CHECKED,Next-hop information is unavailable.
+NET-019,Routing,Interface shutdown.,Route Checker,FAIL,Router interface is administratively down.
+NET-020,Routing,Default route missing.,Route Checker,FAIL,Default route is missing.
+NET-021,ACL,ACL blocks ICMP.,ACL Checker,FAIL,ACL is blocking ICMP traffic.
+NET-022,ACL,ACL blocks HTTP.,ACL Checker,FAIL,ACL is blocking HTTP traffic.
+NET-023,ACL,ACL placement is wrong.,ACL Checker,FAIL,ACL placement is incorrect.
+NET-024,NAT,NAT missing.,NAT Checker,NOT_CHECKED,NAT configuration information is unavailable.
+NET-025,NAT,NAT interface roles wrong.,NAT Checker,NOT_CHECKED,NAT interface role information is unavailable.
+NET-026,NAT,NAT ACL mismatch.,NAT Checker,NOT_CHECKED,NAT ACL information is unavailable.
+NET-027,Wireless,Wrong SSID.,Wireless Checker,NOT_CHECKED,SSID information is unavailable.
+NET-028,Wireless,Wrong wireless password.,Wireless Checker,NOT_CHECKED,Wireless password information is unavailable.
+NET-029,Wireless,Wireless DHCP/network problem.,Wireless Checker,NOT_CHECKED,Wireless network information is unavailable.
+NET-030,Wireless,AP port VLAN mismatch.,VLAN Checker,NOT_CHECKED,AP VLAN information is unavailable.

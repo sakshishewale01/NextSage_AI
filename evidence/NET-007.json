@@ -1,0 +1,53 @@
+{
+    "case_id": "NET-007",
+    "source": {
+        "readme": "packet_tracer\\Case_07\\Readme.md",
+        "case_folder": "packet_tracer\\Case_07",
+        "screenshots": [
+            "image.png"
+        ]
+    },
+    "case_title": "Wrong Default Gateway",
+    "problem": "PC0 cannot reach another network because its default gateway is incorrectly configured.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [],
+        "ip_addresses_found": [
+            "192.168.10.10",
+            "255.255.255.0",
+            "192.168.10.254",
+            "192.168.20.10",
+            "192.168.20.1",
+            "192.168.10.1"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "IP Address": "192.168.20.10",
+            "Subnet Mask": "255.255.255.0",
+            "Default Gateway": "192.168.20.1",
+            "G0/0": "192.168.10.1",
+            "G0/1": "192.168.20.1",
+            "The PC configuration was checked using": "ipconfig",
+            "PC0 was using": "Default Gateway: 192.168.10.254",
+            "The remote network was tested using": "ping 192.168.20.10",
+            "The default gateway of PC0 was changed from": "192.168.10.254",
+            "The configuration was checked again using": "ipconfig",
+            "The remote network was tested again": "ping 192.168.20.10",
+            "The ping was successful with": "Packets Sent = 4",
+            "Received": "4",
+            "Lost": "0"
+        }
+    },
+    "structured_evidence": {
+        "gateway": "192.168.10.254"
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-007 – Wrong Default Gateway\n\n## Problem\n\nPC0 cannot reach another network because its default gateway is incorrectly configured.\n\n## Topology\n\n- 1 Router\n- 2 Cisco 2960 Switches\n- 2 PCs\n\n```text\nPC0 ── SW1 ── Router ── SW2 ── PC1\nIP Configuration\n\nPC0\n\nIP Address: 192.168.10.10\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.10.254 ❌\n\nPC1\n\nIP Address: 192.168.20.10\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.20.1\n\nRouter\n\nG0/0: 192.168.10.1\nG0/1: 192.168.20.1\nProblem Verification\n\nThe PC configuration was checked using:\n\nipconfig\n\nPC0 was using:\n\nDefault Gateway: 192.168.10.254\n\nHowever, the correct router interface was:\n\n192.168.10.1\nWrong Gateway\n\nConnectivity Test\n\nThe remote network was tested using:\n\nping 192.168.20.10\n\nThe ping failed because the default gateway was incorrect.\n\nPing Failed\n\nSolution\n\nThe default gateway of PC0 was changed from:\n\n192.168.10.254\n\nto:\n\n192.168.10.1\nVerification\n\nThe configuration was checked again using:\n\nipconfig\n\nThe correct gateway was displayed.\n\nCorrect Gateway\n\nFinal Connectivity Test\n\nThe remote network was tested again:\n\nping 192.168.20.10\n\nThe ping was successful with:\n\nPackets Sent = 4\nReceived = 4\nLost = 0\nSuccessful Ping\n\nResult\n\nThe wrong default gateway was identified and corrected.\n\nAfter configuring the correct gateway, PC0 was able to communicate with the remote network successfully.\n\nWhat I Learned\nWhat a default gateway is.\nWhy a gateway is required to reach another network.\nHow to check gateway information using ipconfig.\nHow an incorrect gateway can cause remote connectivity problems.\nHow to verify connectivity using ping.\n\n![alt text](image.png)"
+}

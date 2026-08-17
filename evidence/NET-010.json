@@ -1,0 +1,40 @@
+{
+    "case_id": "NET-010",
+    "source": {
+        "readme": "packet_tracer\\Case_10\\Readme.md",
+        "case_folder": "packet_tracer\\Case_10",
+        "screenshots": []
+    },
+    "case_title": "",
+    "problem": "The DHCP pool was not initially present on the Cisco router.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "PC0 was tested using:\n\n```bash\nipconfig /release\nipconfig /renew\nipconfig\n```\n\nThe result showed:\n\n```text\nDHCP request failed.\nIPv4 Address : 0.0.0.0\nSubnet Mask : 0.0.0.0\nDefault Gateway : 0.0.0.0\n```\n\n**Result:** The PC could not obtain a usable IP address because the DHCP pool was missing. ✅",
+        "commands": [
+            "show ip dhcp pool",
+            "show running-config"
+        ],
+        "ip_addresses_found": [
+            "192.168.10.1",
+            "255.255.255.0",
+            "0.0.0.0"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "IPv4 Address": "0.0.0.0",
+            "Subnet Mask": "0.0.0.0",
+            "Default Gateway": "0.0.0.0"
+        }
+    },
+    "structured_evidence": {
+        "pool_exists": false
+    },
+    "root_cause": "",
+    "solution": "The DHCP pool was intentionally left missing to create the required test-case condition.\n\nThe DHCP configuration was checked using:\n\n```bash\nshow ip dhcp pool\n```\n\nNo DHCP pool was displayed.\n\nThe running configuration was checked using:\n\n```bash\nshow running-config\n```\n\nNo matching DHCP pool configuration was present.",
+    "actual_evidence": "PC0 was tested using:\n\n```bash\nipconfig /release\nipconfig /renew\nipconfig\n```\n\nThe result showed:\n\n```text\nDHCP request failed.\nIPv4 Address : 0.0.0.0\nSubnet Mask : 0.0.0.0\nDefault Gateway : 0.0.0.0\n```\n\n**Result:** The PC could not obtain a usable IP address because the DHCP pool was missing. ✅"
+}

@@ -1,0 +1,58 @@
+{
+    "case_id": "NET-030",
+    "source": {
+        "readme": "packet_tracer\\Case_30\\Readme.md",
+        "case_folder": "packet_tracer\\Case_30",
+        "screenshots": [
+            "Screenshot 2026-08-16 171555.png",
+            "Screenshot 2026-08-16 171821.png"
+        ]
+    },
+    "case_title": "AP Connected to Wrong VLAN",
+    "problem": "The Access Point is connected to the wrong VLAN on the switch.\n\nBecause of the incorrect VLAN configuration, the wireless laptop cannot communicate with the intended network.\n\n---",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "The VLAN configuration was checked using:\n\nshow vlan brief\n\nThe command showed that the Access Point's switch port Fa0/1 was assigned to VLAN 20 instead of VLAN 10.\n\nThe switch interface status was also checked using:\n\nshow interfaces status\nRoot Cause\n\nThe root cause was an incorrect VLAN assignment on the switch port connected to the Access Point.\n\nThe configuration was:\n\nFa0/1 → VLAN 20 ❌\n\nThe required configuration was:\n\nFa0/1 → VLAN 10 ✅",
+        "commands": [
+            "show vlan brief",
+            "show interfaces"
+        ],
+        "ip_addresses_found": [
+            "192.168.10.1",
+            "255.255.255.0",
+            "192.168.10.2"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "The topology contains": "- 1 Laptop",
+            "Interface": "GigabitEthernet 0/0",
+            "IP Address": "192.168.10.1",
+            "Subnet Mask": "255.255.255.0",
+            "Name": "WRONG_VLAN",
+            "A second VLAN was created to demonstrate the fault": "VLAN 20",
+            "SSID": "CampusWiFi",
+            "The VLAN configuration was checked using": "show vlan brief",
+            "The switch interface status was also checked using": "show interfaces status",
+            "The configuration was": "Fa0/1 → VLAN 20 ❌",
+            "The required configuration was": "Fa0/1 → VLAN 10 ✅",
+            "The laptop was connected to the Access Point using": "SSID: CampusWiFi",
+            "The laptop was configured with": "IP Address: 192.168.10.2",
+            "Default Gateway": "192.168.10.1",
+            "The following command was used": "ping 192.168.10.1",
+            "Before the fix": "Access Point",
+            "After the fix": "Access Point"
+        }
+    },
+    "structured_evidence": {
+        "ap_vlan": 10,
+        "expected_ap_vlan": 10
+    },
+    "root_cause": "",
+    "solution": "The Access Point's switch port was changed to VLAN 10.",
+    "actual_evidence": "The VLAN configuration was checked using:\n\nshow vlan brief\n\nThe command showed that the Access Point's switch port Fa0/1 was assigned to VLAN 20 instead of VLAN 10.\n\nThe switch interface status was also checked using:\n\nshow interfaces status\nRoot Cause\n\nThe root cause was an incorrect VLAN assignment on the switch port connected to the Access Point.\n\nThe configuration was:\n\nFa0/1 → VLAN 20 ❌\n\nThe required configuration was:\n\nFa0/1 → VLAN 10 ✅"
+}

@@ -1,0 +1,59 @@
+{
+    "case_id": "NET-024",
+    "source": {
+        "readme": "packet_tracer\\Case_24\\Readme.md",
+        "case_folder": "packet_tracer\\Case_24",
+        "screenshots": [
+            "Screenshot 2026-08-16 145802.png"
+        ]
+    },
+    "case_title": "NAT Not Configured",
+    "problem": "A private PC needs to communicate with an outside server, but NAT is not configured on the router.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "show ip interface brief",
+            "show ip nat translations",
+            "show running-config"
+        ],
+        "ip_addresses_found": [
+            "192.168.10.10",
+            "255.255.255.0",
+            "192.168.10.1",
+            "192.168.20.1",
+            "192.168.20.10",
+            "192.168.10.0",
+            "0.0.0.255"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "Devices used": "1 PC",
+            "IP Address": "192.168.20.10",
+            "Subnet Mask": "255.255.255.0",
+            "Default Gateway": "192.168.20.1",
+            "G0/0": "192.168.10.1",
+            "G0/1": "192.168.20.1",
+            "The router interfaces were checked using": "show ip interface brief",
+            "The NAT table was checked using": "show ip nat translations",
+            "The router configuration was checked using": "show running-config",
+            "The outside interface was configured as": "interface gigabitEthernet 0/1",
+            "A NAT ACL was created": "access-list 1 permit 192.168.10.0 0.0.0.255",
+            "PAT was configured using": "ip nat inside source list 1 interface gigabitEthernet 0/1 overload",
+            "The configuration was checked again using": "show running-config",
+            "Traffic was generated from PC0 using": "ping 192.168.20.10",
+            "The NAT table was checked again": "show ip nat translations"
+        }
+    },
+    "structured_evidence": {
+        "nat_configured": false
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-024 – NAT Not Configured\n\n## Problem\n\nA private PC needs to communicate with an outside server, but NAT is not configured on the router.\n\n## Topology\n\n```text\nPC0 ─── Switch0 ─── Router0 ─── Server0\n\nDevices used:\n\n1 PC\n1 Cisco 2960 Switch\n1 Cisco 1941 Router\n1 Server\nIP Addressing\nPC0 – Private Network\nIP Address: 192.168.10.10\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.10.1\nRouter0\nG0/0: 192.168.10.1\nG0/1: 192.168.20.1\nServer0 – Outside Network\nIP Address: 192.168.20.10\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.20.1\nStep 1 – Check Router Interfaces\n\nThe router interfaces were checked using:\n\nshow ip interface brief\n\nBoth interfaces were configured and enabled.\n\nStep 2 – Check NAT Translation\n\nThe NAT table was checked using:\n\nshow ip nat translations\n\nInitially, no NAT translation was present.\n\nStep 3 – Check Running Configuration\n\nThe router configuration was checked using:\n\nshow running-config\n\nNo NAT configuration was present.\n\nRoot Cause\n\nThe router did not have NAT configured.\n\nTherefore, private network traffic was not being translated.\n\nSolution\n\nThe private router interface was configured as the NAT inside interface:\n\ninterface gigabitEthernet 0/0\nip nat inside\n\nThe outside interface was configured as:\n\ninterface gigabitEthernet 0/1\nip nat outside\n\nA NAT ACL was created:\n\naccess-list 1 permit 192.168.10.0 0.0.0.255\n\nPAT was configured using:\n\nip nat inside source list 1 interface gigabitEthernet 0/1 overload\nStep 4 – Verify NAT Configuration\n\nThe configuration was checked again using:\n\nshow running-config\n\nThe NAT configuration was now present.\n\nStep 5 – Generate Traffic\n\nTraffic was generated from PC0 using:\n\nping 192.168.20.10\nStep 6 – Verify NAT Translation\n\nThe NAT table was checked again:\n\nshow ip nat translations\n\nA NAT translation appeared after traffic was generated.\n\nResult\n\nThe NAT configuration problem was successfully identified and fixed.\n\nInitially, no NAT translation was present. After configuring NAT and generating traffic, a NAT translation appeared."
+}

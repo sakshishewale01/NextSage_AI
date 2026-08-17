@@ -1,0 +1,71 @@
+{
+    "case_id": "NET-013",
+    "source": {
+        "readme": "packet_tracer\\Case_13\\Readme.md",
+        "case_folder": "packet_tracer\\Case_13",
+        "screenshots": [
+            "Screenshot 2026-08-16 221248.png",
+            "Screenshot 2026-08-16 221253.png"
+        ]
+    },
+    "case_title": "Wrong DHCP DNS",
+    "problem": "The DHCP server provides an incorrect DNS server address to the PC.\n\nThe PC receives a valid IP address and can communicate using IP addresses, but DNS name resolution fails because the DHCP pool provides the wrong DNS server.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "show running-config"
+        ],
+        "ip_addresses_found": [
+            "192.168.13.1",
+            "255.255.255.0",
+            "192.168.13.2",
+            "192.168.13.0",
+            "192.168.13.254"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": [
+                "192.168.13.0/24"
+            ]
+        },
+        "key_value_information": {
+            "IP Address": "192.168.13.2",
+            "Subnet Mask": "255.255.255.0",
+            "Default Gateway": "192.168.13.1",
+            "The DNS service contains the following A record": "Name: www.test.com",
+            "Type": "A Record",
+            "Address": "192.168.13.1",
+            "The correct configuration was verified using": "do show running-config",
+            "The router was tested using": "ping 192.168.13.1",
+            "Result": "Ping request could not find host www.test.com.",
+            "The DNS server was tested using": "ping 192.168.13.2",
+            "DNS name resolution was tested using": "ping www.test.com",
+            "The hostname successfully resolved to": "192.168.13.1",
+            "The faulty DHCP configuration is": "ip dhcp pool LANPOOL",
+            "The important fault condition is": "IPv4 Address : 192.168.13.x",
+            "DNS Server": "192.168.13.254",
+            "IP connectivity to the router was tested using": "ping 192.168.13.1",
+            "IP connectivity to the DNS server was tested using": "ping 192.168.13.2",
+            "Actual Router IP": "192.168.13.1",
+            "Actual DNS Server": "192.168.13.2",
+            "DHCP Network": "192.168.13.0/24",
+            "DHCP Gateway": "192.168.13.1",
+            "DHCP DNS": "192.168.13.254 ← WRONG",
+            "Save a screenshot showing": "ip dhcp pool LANPOOL",
+            "Save the PC command prompt screenshot showing": "ping 192.168.13.1",
+            "This successfully reproduces the condition": "\"IP connectivity works but names fail.\""
+        }
+    },
+    "structured_evidence": {
+        "pool_exists": true,
+        "network": "192.168.13.0 255.255.255.0",
+        "default_router": "192.168.13.1",
+        "dns_server": "192.168.13.2"
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-013 – Wrong DHCP DNS\n\n## Problem\n\nThe DHCP server provides an incorrect DNS server address to the PC.\n\nThe PC receives a valid IP address and can communicate using IP addresses, but DNS name resolution fails because the DHCP pool provides the wrong DNS server.\n\n## Topology\n\n- 1 Cisco 1941 Router\n- 1 Cisco 2960 Switch\n- 1 PC\n- 1 Server (DNS Server)\n\n### Connections\n\n- Router0 GigabitEthernet0/0 → Switch0 GigabitEthernet0/1\n- Switch0 FastEthernet0/1 → PC0 FastEthernet0\n- Switch0 FastEthernet0/2 → Server0 FastEthernet0\n\n## IP Configuration\n\n### Router0\n\n**GigabitEthernet0/0**\n\n```text\nIP Address: 192.168.13.1\nSubnet Mask: 255.255.255.0\n\nServer0 – DNS Server\nIP Address: 192.168.13.2\nSubnet Mask: 255.255.255.0\nDefault Gateway: 192.168.13.1\n\nThe DNS service contains the following A record:\n\nName: www.test.com\nType: A Record\nAddress: 192.168.13.1\nPC0\n\nPC0 is configured to obtain its IPv4 configuration automatically using DHCP.\n\nCorrect DHCP Configuration\n\nInitially, the DHCP pool was configured correctly:\n\nip dhcp excluded-address 192.168.13.1 192.168.13.2\n\nip dhcp pool LANPOOL\n network 192.168.13.0 255.255.255.0\n default-router 192.168.13.1\n dns-server 192.168.13.2\n\nThe correct configuration was verified using:\n\ndo show running-config\n\nPC0 successfully received an IP address from the DHCP server.\n\nCorrect Connectivity Verification\n\nThe router was tested using:\n\nping 192.168.13.1\n\nResult: 4 packets received, 0% packet loss. ✅\n\nThe DNS server was tested using:\n\nping 192.168.13.2\n\nResult: 4 packets received, 0% packet loss. ✅\n\nDNS name resolution was tested using:\n\nping www.test.com\n\nThe hostname successfully resolved to:\n\n192.168.13.1\n\nResult: 4 packets received, 0% packet loss. ✅\n\nThis confirmed that the original configuration was working correctly before creating the fault.\n\nFault Created\n\nAfter verifying the correct configuration, the DHCP DNS server was intentionally changed to an incorrect address.\n\nThe faulty DHCP configuration is:\n\nip dhcp pool LANPOOL\n network 192.168.13.0 255.255.255.0\n default-router 192.168.13.1\n dns-server 192.168.13.254\n\nThe network and default gateway remain correct.\n\nOnly the DHCP DNS server was changed.\n\nActual DNS Server\n192.168.13.2\nIncorrect DHCP DNS Server\n192.168.13.254\n\nTherefore, PC0 receives an incorrect DNS server address through DHCP.\n\nPC Verification\n\nPC0 was refreshed using DHCP.\n\nThe PC received a valid IP address, subnet mask, and default gateway, but the DNS server supplied by DHCP was incorrect.\n\nThe important fault condition is:\n\nIPv4 Address : 192.168.13.x\nSubnet Mask : 255.255.255.0\nDefault Gateway : 192.168.13.1\nDNS Server : 192.168.13.254\n\nThe exact IP address may vary depending on DHCP allocation.\n\nFault Verification\n\nIP connectivity to the router was tested using:\n\nping 192.168.13.1\n\nResult: 4 packets received, 0% packet loss. ✅\n\nIP connectivity to the DNS server was tested using:\n\nping 192.168.13.2\n\nResult: 4 packets received, 0% packet loss. ✅\n\nDNS name resolution was tested using:\n\nping www.test.com\n\nResult:\n\nPing request could not find host www.test.com.\nPlease check the name and try again.\n\nThis confirms that IP connectivity is working, but DNS name resolution is failing.\n\nExpected Fault\nActual Router IP : 192.168.13.1\nActual DNS Server : 192.168.13.2\nDHCP Network : 192.168.13.0/24\nDHCP Gateway : 192.168.13.1\nDHCP DNS : 192.168.13.254 ← WRONG\n\nThis reproduces the NET-013 – Wrong DHCP DNS fault.\n\nExpected Fix\n\nThe DHCP DNS server should be corrected to the actual DNS server:\n\nip dhcp pool LANPOOL\n dns-server 192.168.13.2\n\nThe fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.\n\nScreenshots\nTopology\n\nSave a screenshot showing:\n\nRouter0\nSwitch0\nPC0\nServer0\nAll network connections\nCorrect Configuration\n\nSave screenshots showing the original working DHCP configuration and PC configuration.\n\nWrong DHCP DNS Configuration\n\nSave a screenshot showing:\n\nip dhcp pool LANPOOL\n network 192.168.13.0 255.255.255.0\n default-router 192.168.13.1\n dns-server 192.168.13.254\nFault Verification\n\nSave the PC command prompt screenshot showing:\n\nping 192.168.13.1\n\nwith successful replies,\n\nping 192.168.13.2\n\nwith successful replies, and\n\nping www.test.com\n\nwith the DNS resolution failure.\n\nResult\n\nThe NET-013 – Wrong DHCP DNS fault was successfully created and verified.\n\nThe PC receives a valid IP address and can communicate with the router and DNS server using their IP addresses. However, the PC cannot resolve www.test.com because DHCP provides an incorrect DNS server address (192.168.13.254) instead of the actual DNS server (192.168.13.2).\n\nThis successfully reproduces the condition:\n\n\"IP connectivity works but names fail.\""
+}

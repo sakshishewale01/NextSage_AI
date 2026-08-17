@@ -1,0 +1,44 @@
+{
+    "case_id": "NET-027",
+    "source": {
+        "readme": "packet_tracer\\Case_27\\Readme.md",
+        "case_folder": "packet_tracer\\Case_27",
+        "screenshots": [
+            "screenshots/02-ap-ssid.png",
+            "screenshots/03-connected.png",
+            "screenshots/04-wrong-ssid.png",
+            "screenshots/05-connection-success.png",
+            "Screenshot 2026-08-16 160313.png",
+            "Screenshot 2026-08-16 160850.png",
+            "Screenshot 2026-08-16 160940.png",
+            "Screenshot 2026-08-16 161157.png",
+            "Screenshot 2026-08-16 161346.png",
+            "Screenshot 2026-08-16 161549.png"
+        ]
+    },
+    "case_title": "Wrong SSID",
+    "problem": "The laptop cannot join the intended Wi-Fi network.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [],
+        "ip_addresses_found": [],
+        "network_information": {
+            "subnet_masks": [],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "The Access Point was configured with the SSID": "CampusWiFi",
+            "The Access Point SSID was changed to": "WrongWiFi",
+            "The laptop was intended to connect to": "CampusWiFi",
+            "but the Access Point was using": "WrongWiFi",
+            "The Access Point SSID was changed back to": "CampusWiFi"
+        }
+    },
+    "structured_evidence": {
+        "expected_ssid": "CampusWiFi"
+    },
+    "root_cause": "The SSID was incorrect.\n\nThe laptop was intended to connect to:\n\n`CampusWiFi`\n\nbut the Access Point was using:\n\n`WrongWiFi`\n\nTherefore, the laptop could not join the intended Wi-Fi network.",
+    "solution": "The Access Point SSID was changed back to:\n\n`CampusWiFi`\n\nThe laptop was then connected to the correct wireless network.\n\n![Connection Successful](screenshots/05-connection-success.png)",
+    "actual_evidence": "# NET-027 – Wrong SSID\n\n## Problem\n\nThe laptop cannot join the intended Wi-Fi network.\n\n## Topology\n\n- 1 Access Point\n- 1 Laptop\n\n## Configuration\n\nThe Access Point was configured with the SSID:\n\n`CampusWiFi`\n\n![AP SSID](screenshots/02-ap-ssid.png)\n\n## Initial Connection\n\nThe laptop was able to connect successfully to the Access Point.\n\n![Successful Connection](screenshots/03-connected.png)\n\n## Fault Created\n\nThe Access Point SSID was changed to:\n\n`WrongWiFi`\n\nThis created an SSID mismatch between the intended wireless network and the configured network.\n\n![Wrong SSID](screenshots/04-wrong-ssid.png)\n\n## Root Cause\n\nThe SSID was incorrect.\n\nThe laptop was intended to connect to:\n\n`CampusWiFi`\n\nbut the Access Point was using:\n\n`WrongWiFi`\n\nTherefore, the laptop could not join the intended Wi-Fi network.\n\n## Solution\n\nThe Access Point SSID was changed back to:\n\n`CampusWiFi`\n\nThe laptop was then connected to the correct wireless network.\n\n![Connection Successful](screenshots/05-connection-success.png)\n\n## Result\n\nThe wireless connection was successfully restored by using the correct SSID.\n\n## What I Learned\n\n- SSID is the name of a Wi-Fi network.\n- The correct wireless network must be selected.\n- An incorrect SSID can prevent a device from joining the intended Wi-Fi network.\n- Checking the wireless settings helps identify the problem."
+}

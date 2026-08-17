@@ -1,0 +1,47 @@
+{
+    "case_id": "NET-005",
+    "source": {
+        "readme": "packet_tracer\\Case_05\\Readme.md",
+        "case_folder": "packet_tracer\\Case_05",
+        "screenshots": [
+            "image.png",
+            "image-1.png"
+        ]
+    },
+    "case_title": "Simple Trunk Problem",
+    "problem": "Two PCs were connected to two different switches. Both PCs were configured in VLAN 10, but the inter-switch link was not configured as a trunk.\n\nBecause of this, the same VLAN could not communicate properly across the two switches.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "show interfaces"
+        ],
+        "ip_addresses_found": [
+            "192.168.10.10",
+            "255.255.255.0",
+            "192.168.10.11"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "PC1 was also assigned to VLAN 10": "interface fa0/1",
+            "The inter-switch connection was checked using": "show interfaces trunk",
+            "The following command was used from PC0": "ping 192.168.10.11",
+            "The trunk configuration was checked using": "show interfaces trunk",
+            "The ping was performed again": "ping 192.168.10.11",
+            "The result was successful with": "Packets Sent = 4",
+            "Received": "4",
+            "Lost": "0"
+        }
+    },
+    "structured_evidence": {
+        "trunk_status": "down"
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-005 – Simple Trunk Problem\n\n## Problem\n\nTwo PCs were connected to two different switches. Both PCs were configured in VLAN 10, but the inter-switch link was not configured as a trunk.\n\nBecause of this, the same VLAN could not communicate properly across the two switches.\n\n## Topology\n\n- 2 Cisco 2960 Switches\n- 2 PCs\n- SW1 Fa0/1 → PC0\n- SW2 Fa0/1 → PC1\n- SW1 Fa0/24 → SW2 Fa0/24\n\n## IP Configuration\n\n**PC0:** `192.168.10.10 / 255.255.255.0`\n\n**PC1:** `192.168.10.11 / 255.255.255.0`\n\n## VLAN Configuration\n\nVLAN 10 was created on both switches and named `STUDENTS`.\n\nPC0 was assigned to VLAN 10:\n\n```bash\ninterface fa0/1\nswitchport mode access\nswitchport access vlan 10\n\nPC1 was also assigned to VLAN 10:\n\ninterface fa0/1\nswitchport mode access\nswitchport access vlan 10\nProblem Verification\n\nThe inter-switch connection was checked using:\n\nshow interfaces trunk\n\nThe inter-switch port was not shown as a trunk.\n\nTrunk Not Configured\n\nConnectivity Test\n\nThe following command was used from PC0:\n\nping 192.168.10.11\n\nThe ping initially failed because the inter-switch link was not configured as a trunk.\n\nPing Failed\n\nSolution\n\nThe inter-switch port Fa0/24 was configured as a trunk on both switches.\n\nSW1\ninterface fa0/24\nswitchport mode trunk\nSW2\ninterface fa0/24\nswitchport mode trunk\nVerification\n\nThe trunk configuration was checked using:\n\nshow interfaces trunk\n\nThe inter-switch port was now operating as a trunk.\n\nTrunk Configured\n\nFinal Connectivity Test\n\nThe ping was performed again:\n\nping 192.168.10.11\n\nThe result was successful with:\n\nPackets Sent = 4\nReceived = 4\nLost = 0\nSuccessful Ping\n\nResult\n\nThe inter-switch link was successfully configured as a trunk.\n\nBoth switches were able to carry VLAN 10 traffic across the link, and PC0 successfully communicated with PC1.\n\nWhat I Learned\nWhat a trunk port is.\nWhy a trunk is needed between switches when carrying VLAN traffic.\nHow to configure a switch port as a trunk.\nHow to verify trunk configuration using show interfaces trunk.\nHow to test connectivity using ping.\n\n![alt text](image.png)\n![alt text](image-1.png)"
+}

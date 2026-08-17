@@ -1,0 +1,50 @@
+{
+    "case_id": "NET-003",
+    "source": {
+        "readme": "packet_tracer\\Case_03\\Readme.md",
+        "case_folder": "packet_tracer\\Case_03",
+        "screenshots": []
+    },
+    "case_title": "PCs in Different VLANs",
+    "problem": "Two PCs should communicate with each other because both are supposed to be in VLAN 10, but the ping fails because the two PCs are assigned to different VLANs.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "The VLAN configuration was checked using:\n\n```bash\nshow vlan brief\n```\n\nThe actual output showed:\n\n```text\n10 STUDENTS active Fa0/1\n20 DIFFERENT_VLAN active Fa0/2\n```\n\nThis shows that the two PC ports are assigned to different VLANs.",
+        "commands": [
+            "vlan 10",
+            "name STUDENTS",
+            "interface fa0/1",
+            "switchport mode access",
+            "switchport access vlan 10",
+            "interface fa0/2",
+            "vlan 20",
+            "name DIFFERENT_VLAN",
+            "switchport access vlan 20",
+            "ping 192.168.10.11",
+            "show vlan brief"
+        ],
+        "ip_addresses_found": [
+            "192.168.10.10",
+            "255.255.255.0",
+            "192.168.10.11"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {}
+    },
+    "structured_evidence": {
+        "vlan_assignments": [
+            10,
+            20
+        ],
+        "actual_vlan": 20,
+        "expected_vlan": 10
+    },
+    "root_cause": "**PCs are in different VLANs.**\n\nPC0 is connected to VLAN 10 while PC1 is connected to VLAN 20. Because there is no inter-VLAN routing in the topology, the PCs cannot communicate.",
+    "solution": "PC1's switch port `Fa0/2` was moved from VLAN 20 to VLAN 10:\n\n```bash\ninterface fa0/2\nswitchport mode access\nswitchport access vlan 10\n```\n\nThe VLAN configuration was then verified using:\n\n```bash\nshow vlan brief\n```\n\nThe corrected result was:\n\n```text\n10 STUDENTS active Fa0/1, Fa0/2\n```",
+    "actual_evidence": "The VLAN configuration was checked using:\n\n```bash\nshow vlan brief\n```\n\nThe actual output showed:\n\n```text\n10 STUDENTS active Fa0/1\n20 DIFFERENT_VLAN active Fa0/2\n```\n\nThis shows that the two PC ports are assigned to different VLANs."
+}

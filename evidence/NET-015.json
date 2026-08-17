@@ -1,0 +1,49 @@
+{
+    "case_id": "NET-015",
+    "source": {
+        "readme": "packet_tracer\\Case_15\\Readme.md",
+        "case_folder": "packet_tracer\\Case_15",
+        "screenshots": [
+            "Screenshot 2026-08-16 221816.png"
+        ]
+    },
+    "case_title": "DNS Service Disabled",
+    "problem": "The DNS service on the DNS server was intentionally disabled. As a result, the PC can communicate with the DNS server using its IP address, but it cannot resolve the hostname `www.test.com`.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [],
+        "ip_addresses_found": [
+            "192.168.15.10",
+            "255.255.255.0",
+            "192.168.15.2"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "Name": "www.test.com",
+            "Type": "A Record",
+            "Address": "192.168.15.2",
+            "Result": "4 packets received, 0% packet loss. ✅",
+            "DNS hostname resolution was also tested using": "ping www.test.com",
+            "The hostname successfully resolved to": "192.168.15.2",
+            "The DNS A record was kept unchanged": "www.test.com → 192.168.15.2",
+            "IP connectivity was tested again using": "ping 192.168.15.2",
+            "Hostname resolution was then tested using": "ping www.test.com",
+            "DNS Server IP": "192.168.15.2",
+            "DNS Record": "www.test.com → 192.168.15.2",
+            "DNS Service": "OFF ← WRONG",
+            "The DNS A record should remain": "www.test.com → 192.168.15.2"
+        }
+    },
+    "structured_evidence": {
+        "dns_service_enabled": false
+    },
+    "root_cause": "",
+    "solution": "",
+    "actual_evidence": "# NET-015 – DNS Service Disabled\n\n## Problem\n\nThe DNS service on the DNS server was intentionally disabled. As a result, the PC can communicate with the DNS server using its IP address, but it cannot resolve the hostname `www.test.com`.\n\n## Topology\n\n- 1 PC\n- 1 Cisco 2960 Switch\n- 1 Server\n- PC0 → Fa0/1\n- Server0 → Fa0/2\n\n## IP Configuration\n\n**PC0:** `192.168.15.10 / 255.255.255.0` \n**DNS Server:** `192.168.15.2 / 255.255.255.0`\n\n**DNS Server configured on PC0:** `192.168.15.2`\n\n## Correct Configuration\n\nThe DNS server was initially configured with the following A record:\n\n```text\nName: www.test.com\nType: A Record\nAddress: 192.168.15.2\n```\n\nThe DNS service was initially turned ON to verify that the correct configuration was working.\n\nInitial Verification\n\nConnectivity between PC0 and the DNS server was tested using:\n\nping 192.168.15.2\n\nResult: 4 packets received, 0% packet loss. ✅\n\nDNS hostname resolution was also tested using:\n\nping www.test.com\n\nThe hostname successfully resolved to:\n\n192.168.15.2\n\nResult: 4 packets received, 0% packet loss. ✅\n\n## Fault Created\n\nAfter verifying the correct connection, the DNS service on Server0 was intentionally turned OFF.\n\nThe DNS A record was kept unchanged:\n\nwww.test.com → 192.168.15.2\n\nThe fault is that the DNS service itself is disabled.\n\nVerification After Fault\n\nIP connectivity was tested again using:\n\nping 192.168.15.2\n\nResult: 4 packets received, 0% packet loss. ✅\n\nThis confirms that the PC can still communicate with the DNS server.\n\nHostname resolution was then tested using:\n\nping www.test.com\n\n## The result was:\n\nPing request could not find host www.test.com.\nPlease check the name and try again.\n\nThis confirms that hostname resolution fails because the DNS service is disabled.\n\nExpected Fault\nDNS Server IP : 192.168.15.2\nDNS Record : www.test.com → 192.168.15.2\nDNS Service : OFF ← WRONG\n\nping 192.168.15.2 : SUCCESS\nping www.test.com : FAILED\n\nThis reproduces the NET-015 – DNS Service Disabled fault.\n\n## Expected Fix\n\nThe DNS service on Server0 should be turned ON.\n\nThe DNS A record should remain:\n\nwww.test.com → 192.168.15.2\n\nThe fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.\n\n## Topology\n\nDNS Configuration\n\nPC IP Configuration\n\nSuccessful IP Ping Before Fault\n\nSuccessful DNS Resolution Before Fault\n\nDNS Service Disabled\n\nIP Ping After Fault\n\nFailed Hostname Resolution\n\n## Result\n\nThe NET-015 – DNS Service Disabled fault was successfully created.\n\nThe PC can still reach the DNS server using its IP address, but hostname resolution fails because the DNS service on Server0 is turned OFF.\n\nThis reproduces the condition where the hostname cannot be resolved even though IP connectivity to the DNS server is working.\n\n## What I Learned\nHow to configure a DNS server in Cisco Packet Tracer\nHow to create an A record\nHow to configure a PC to use a DNS server\nHow to test DNS resolution using ping\nHow to identify the difference between IP connectivity and DNS resolution\nHow to disable the DNS service to reproduce a DNS failure\nHow to verify a DNS service fault"
+}

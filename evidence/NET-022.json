@@ -1,0 +1,44 @@
+{
+    "case_id": "NET-022",
+    "source": {
+        "readme": "packet_tracer\\Case_22\\Readme.md",
+        "case_folder": "packet_tracer\\Case_22",
+        "screenshots": []
+    },
+    "case_title": "ACL Blocks Web",
+    "problem": "The web server was reachable by ping, but HTTP access was blocked by an incorrectly configured ACL.",
+    "evidence_status": "EXTRACTED_FROM_README",
+    "evidence": {
+        "evidence_section": "",
+        "commands": [
+            "access-list 101 deny tcp any host 192.168.23.10 eq 80",
+            "access-list 101 permit ip any any",
+            "show access-lists"
+        ],
+        "ip_addresses_found": [
+            "192.168.22.10",
+            "255.255.255.0",
+            "192.168.22.1",
+            "192.168.23.10",
+            "192.168.23.1"
+        ],
+        "network_information": {
+            "subnet_masks": [
+                "255.255.255.0"
+            ],
+            "cidr_networks": []
+        },
+        "key_value_information": {
+            "The ACL configuration was checked using": "show access-lists",
+            "Connectivity was tested using": "ping 192.168.23.10",
+            "Result": "The web page was blocked by the ACL. ❌",
+            "HTTP access was tested from PC0 using": "http://192.168.23.10"
+        }
+    },
+    "structured_evidence": {
+        "http_allowed": false
+    },
+    "root_cause": "",
+    "solution": "An extended ACL was created to block HTTP traffic to the web server:\n\n```bash\naccess-list 101 deny tcp any host 192.168.23.10 eq 80\naccess-list 101 permit ip any any\n\n```\nThe ACL was applied to the router interface connected to the server network:\n\ninterface gigabitEthernet 0/1\nip access-group 101 out\n\nThe first ACL rule blocks TCP traffic on port 80 (HTTP) to the web server, while the second rule permits all other IP traffic.\n\nVerification\n\nThe ACL configuration was checked using:\n\nshow access-lists",
+    "actual_evidence": "# NET-022 – ACL Blocks Web\n\n## Problem\nThe web server was reachable by ping, but HTTP access was blocked by an incorrectly configured ACL.\n\n## Topology\n- 1 Cisco 1941 Router\n- 2 Cisco 2960 Switches\n- 1 PC\n- 1 Web Server\n- PC0 → Switch0 → R1\n- R1 → Switch1 → Server0\n\n## IP Configuration\n\n**PC0:** `192.168.22.10 / 255.255.255.0` \n**R1 LAN Interface:** `192.168.22.1 / 255.255.255.0` \n**Server0:** `192.168.23.10 / 255.255.255.0` \n**R1 Server Interface:** `192.168.23.1 / 255.255.255.0`\n\n## Solution\n\nAn extended ACL was created to block HTTP traffic to the web server:\n\n```bash\naccess-list 101 deny tcp any host 192.168.23.10 eq 80\naccess-list 101 permit ip any any\n\n```\nThe ACL was applied to the router interface connected to the server network:\n\ninterface gigabitEthernet 0/1\nip access-group 101 out\n\nThe first ACL rule blocks TCP traffic on port 80 (HTTP) to the web server, while the second rule permits all other IP traffic.\n\nVerification\n\nThe ACL configuration was checked using:\n\nshow access-lists\n\n## The result showed:\n\nExtended IP access list 101\n10 deny tcp any host 192.168.23.10 eq www (68 matches)\n20 permit ip any any (4 matches)\n\nThe match count on the deny rule confirmed that HTTP traffic was being blocked.\n\nConnectivity was tested using:\n\nping 192.168.23.10\n\nResult: Ping continued to work because ICMP traffic was not blocked. ✅\n\nHTTP access was tested from PC0 using:\n\nhttp://192.168.23.10\n\nResult: The web page was blocked by the ACL. ❌\n\n## Result\n\nThe ACL successfully blocked HTTP traffic to the web server while allowing other IP traffic such as ICMP ping. The fault condition for NET-022 was successfully created and verified.\n\n## What I Learned\nHow to create an extended ACL\nHow to block HTTP traffic using TCP port 80\nHow to apply an ACL to a router interface\nHow to use show access-lists for verification\nHow ACLs can selectively block specific types of network traffic\nHow to allow other traffic using permit ip any any"
+}
