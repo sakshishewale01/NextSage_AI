@@ -1,0 +1,20 @@
+{
+  "case_id": "NET-027",
+  "category": "Wireless",
+  "symptom": "Laptop cannot join the intended wireless network.",
+  "topology": "Laptop → Access Point",
+  "show_outputs": "The Access Point uses the intended SSID, but the laptop is configured with a different SSID.",
+  "expected_fault": "Wrong SSID configured on the wireless client.",
+  "expected_output": {
+    "root_cause": "SSID mismatch",
+    "confidence": 0.98,
+    "evidence": "The SSID configured on the laptop does not match the SSID configured on the Access Point.",
+    "next_command": "Check the wireless client configuration",
+    "fix_steps": [
+      "Open the laptop wireless configuration.",
+      "Select the correct SSID.",
+      "Connect to the Access Point.",
+      "Verify the wireless connection."
+    ]
+  }
+}

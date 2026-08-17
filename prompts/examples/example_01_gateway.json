@@ -1,0 +1,19 @@
+{
+  "case_id": "NET-002",
+  "category": "Gateway",
+  "symptom": "PC cannot communicate with another network.",
+  "topology": "PC → Switch → Router",
+  "show_outputs": "ipconfig shows IPv4 Address 192.168.10.2, Subnet Mask 255.255.255.0, Default Gateway 192.168.20.1.",
+  "expected_fault": "Default gateway mismatch",
+  "expected_output": {
+    "root_cause": "Default gateway mismatch",
+    "confidence": 0.95,
+    "evidence": "The PC is using the 192.168.10.0/24 network, while the configured gateway 192.168.20.1 belongs to a different network.",
+    "next_command": "ipconfig",
+    "fix_steps": [
+      "Set the PC default gateway to the correct router interface address.",
+      "Verify the IP configuration.",
+      "Ping the router to confirm connectivity."
+    ]
+  }
+}

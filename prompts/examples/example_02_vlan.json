@@ -1,0 +1,20 @@
+{
+  "case_id": "NET-005",
+  "category": "VLAN",
+  "symptom": "Devices in the intended VLAN cannot communicate across two switches.",
+  "topology": "PC → Switch1 → Switch2 → PC",
+  "show_outputs": "show interfaces trunk indicates that the inter-switch link is not operating as a trunk.",
+  "expected_fault": "Trunk is not configured correctly.",
+  "expected_output": {
+    "root_cause": "Inter-switch link is not configured as a trunk",
+    "confidence": 0.92,
+    "evidence": "The link between the switches is not operating as a trunk, so the required VLAN traffic cannot cross the link.",
+    "next_command": "show interfaces trunk",
+    "fix_steps": [
+      "Identify the interface connecting the two switches.",
+      "Configure the interface as a trunk.",
+      "Verify the trunk using show interfaces trunk.",
+      "Test communication between the devices."
+    ]
+  }
+}
