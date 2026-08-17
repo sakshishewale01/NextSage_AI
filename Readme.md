@@ -1005,7 +1005,10 @@ Every diagnosis should be supported by network evidence and reviewed by a human 
 **Project:** NetSage AI
 **Domain:** Applied AI + Network Troubleshooting
 **Environment:** Cisco-style Networking Labs
-**Team Size:** 2–3 students
+**Team Member 1 :** Sakshi Shewale
+**Team Member 2 :** Rajnandani Shinde
+**Team Member 3 :** Shruti Thorat
+**Team Member 4 :** Vedangi Patil
 
 ---
 
