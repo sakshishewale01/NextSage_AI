@@ -245,11 +245,14 @@ def load_data():
     if not CSV_PATH.exists():
         return None
 
-    df = pd.read_csv(CSV_PATH)
+    try:
+        df = pd.read_csv(CSV_PATH)
+        df.columns = df.columns.astype(str).str.strip()
+        return df
 
-    df.columns = df.columns.astype(str).str.strip()
-
-    return df
+    except Exception as e:
+        st.error(f"Error loading CSV: {e}")
+        return None
 
 
 df = load_data()
