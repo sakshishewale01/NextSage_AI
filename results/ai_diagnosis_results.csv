@@ -1,0 +1,2830 @@
+Case ID,Category,Status,Finding,Diagnosis,Root Cause,Evidence,Explanation,Recommended Solution,Confidence
+NET-001,VLAN,FAIL,"Wrong access VLAN detected. Actual VLAN: 20, Expected VLAN: 10.",Wrong access VLAN.,"**Wrong access VLAN.**
+
+PC1's switch port `Fa0/2` was assigned to VLAN 20 instead of the required VLAN 10.","The switch VLAN configuration was checked using:
+
+```bash
+show vlan brief
+```
+
+The actual output showed:
+
+```text
+10 STUDENTS active Fa0/1
+20 WRONG_VLAN active Fa0/2
+```
+
+This confirms that PC1's port `Fa0/2` is assigned to the wrong VLAN.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,"PC1's switch port was moved back to VLAN 10:
+
+```bash
+interface fa0/2
+switchport mode access
+switchport access vlan 10
+```
+
+The configuration was then verified using:
+
+```bash
+show vlan brief
+```
+
+The corrected result was:
+
+```text
+10 STUDENTS active Fa0/1, Fa0/2
+```",HIGH
+NET-002,VLAN,PASS,Required VLAN 20 exists.,Required VLAN missing.,,"The VLAN configuration was checked using:
+
+```bash
+show vlan brief
+```
+
+The result confirmed:
+
+```text
+20 STUDENTS active Fa0/1, Fa0/2
+```
+
+Connectivity was tested using:
+
+```bash
+ping 192.168.20.10
+```
+
+**Result:** 4 packets received, 0% packet loss. ✅",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,"VLAN 20 was created and named `STUDENTS`.
+
+```bash
+vlan 20
+name STUDENTS
+````
+
+The ports connected to both PCs were configured as access ports and assigned to VLAN 20:
+
+```bash
+interface fa0/1
+switchport mode access
+switchport access vlan 20
+
+interface fa0/2
+switchport mode access
+switchport access vlan 20
+```",MEDIUM
+NET-003,VLAN,NOT_CHECKED,VLAN information for both PCs is unavailable.,Ports are in different VLANs.,"**PCs are in different VLANs.**
+
+PC0 is connected to VLAN 10 while PC1 is connected to VLAN 20. Because there is no inter-VLAN routing in the topology, the PCs cannot communicate.","The VLAN configuration was checked using:
+
+```bash
+show vlan brief
+```
+
+The actual output showed:
+
+```text
+10 STUDENTS active Fa0/1
+20 DIFFERENT_VLAN active Fa0/2
+```
+
+This shows that the two PC ports are assigned to different VLANs.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,"PC1's switch port `Fa0/2` was moved from VLAN 20 to VLAN 10:
+
+```bash
+interface fa0/2
+switchport mode access
+switchport access vlan 10
+```
+
+The VLAN configuration was then verified using:
+
+```bash
+show vlan brief
+```
+
+The corrected result was:
+
+```text
+10 STUDENTS active Fa0/1, Fa0/2
+```",MEDIUM
+NET-004,VLAN,NOT_CHECKED,Actual and expected VLAN information is unavailable.,Port not assigned to intended VLAN.,,"# NET-004 – Port Left in Default VLAN
+
+## Problem
+
+A new PC was connected to the switch, but its switch port was still in the default VLAN 1 instead of the required student VLAN 10.
+
+## Topology
+
+- 1 Cisco 2960 Switch
+- 2 PCs
+- PC0 → Fa0/1
+- PC1 → Fa0/2
+
+## IP Configuration
+
+**PC0:** `192.168.10.10 / 255.255.255.0`
+
+**PC1:** `192.168.10.11 / 255.255.255.0`
+
+## VLAN Configuration
+
+VLAN 10 was created and named `STUDENTS`.
+
+PC0's port was assigned to VLAN 10:
+
+```bash
+interface fa0/1
+switchport mode access
+switchport access vlan 10
+
+PC1's port was initially left in the default VLAN 1.
+
+Problem Verification
+
+The VLAN configuration was checked using:
+
+show vlan brief
+
+The result showed:
+
+Fa0/1 → VLAN 10
+Fa0/2 → VLAN 1
+
+Therefore, the two PCs were placed in different VLANs.
+
+Wrong VLAN Configuration
+
+Connectivity Test
+
+The following command was used:
+
+ping 192.168.10.11
+
+The ping initially failed because PC0 and PC1 were connected to different VLANs.
+
+Failed Ping
+
+Solution
+
+PC1's switch port Fa0/2 was configured as an access port and assigned to VLAN 10:
+
+interface fa0/2
+switchport mode access
+switchport access vlan 10
+Verification
+
+The VLAN configuration was checked again:
+
+show vlan brief
+
+The result showed:
+
+10 STUDENTS active Fa0/1, Fa0/2
+
+Both PC ports were now in VLAN 10.
+
+Correct VLAN Configuration
+
+Final Connectivity Test
+
+The ping was performed again:
+
+ping 192.168.10.11
+
+The result was successful with:
+
+Packets Sent = 4
+Received = 4
+Lost = 0
+Successful Ping
+
+Result
+
+The problem was successfully resolved by moving PC1's switch port from the default VLAN 1 to VLAN 10.
+
+Both PCs were then in the same VLAN and could communicate successfully.
+
+What I Learned
+The default VLAN on a switch is VLAN 1.
+A switch port can be assigned to a specific VLAN.
+Two PCs in different VLANs cannot communicate directly at Layer 2.
+show vlan brief can be used to check VLAN and port assignments.
+ping can be used to verify connectivity.
+
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-005,VLAN,FAIL,Inter-switch link is not trunking.,Inter-switch link is not trunking.,,"# NET-005 – Simple Trunk Problem
+
+## Problem
+
+Two PCs were connected to two different switches. Both PCs were configured in VLAN 10, but the inter-switch link was not configured as a trunk.
+
+Because of this, the same VLAN could not communicate properly across the two switches.
+
+## Topology
+
+- 2 Cisco 2960 Switches
+- 2 PCs
+- SW1 Fa0/1 → PC0
+- SW2 Fa0/1 → PC1
+- SW1 Fa0/24 → SW2 Fa0/24
+
+## IP Configuration
+
+**PC0:** `192.168.10.10 / 255.255.255.0`
+
+**PC1:** `192.168.10.11 / 255.255.255.0`
+
+## VLAN Configuration
+
+VLAN 10 was created on both switches and named `STUDENTS`.
+
+PC0 was assigned to VLAN 10:
+
+```bash
+interface fa0/1
+switchport mode access
+switchport access vlan 10
+
+PC1 was also assigned to VLAN 10:
+
+interface fa0/1
+switchport mode access
+switchport access vlan 10
+Problem Verification
+
+The inter-switch connection was checked using:
+
+show interfaces trunk
+
+The inter-switch port was not shown as a trunk.
+
+Trunk Not Configured
+
+Connectivity Test
+
+The following command was used from PC0:
+
+ping 192.168.10.11
+
+The ping initially failed because the inter-switch link was not configured as a trunk.
+
+Ping Failed
+
+Solution
+
+The inter-switch port Fa0/24 was configured as a trunk on both switches.
+
+SW1
+interface fa0/24
+switchport mode trunk
+SW2
+interface fa0/24
+switchport mode trunk
+Verification
+
+The trunk configuration was checked using:
+
+show interfaces trunk
+
+The inter-switch port was now operating as a trunk.
+
+Trunk Configured
+
+Final Connectivity Test
+
+The ping was performed again:
+
+ping 192.168.10.11
+
+The result was successful with:
+
+Packets Sent = 4
+Received = 4
+Lost = 0
+Successful Ping
+
+Result
+
+The inter-switch link was successfully configured as a trunk.
+
+Both switches were able to carry VLAN 10 traffic across the link, and PC0 successfully communicated with PC1.
+
+What I Learned
+What a trunk port is.
+Why a trunk is needed between switches when carrying VLAN traffic.
+How to configure a switch port as a trunk.
+How to verify trunk configuration using show interfaces trunk.
+How to test connectivity using ping.
+
+![alt text](image.png)
+![alt text](image-1.png)",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,HIGH
+NET-006,Gateway,FAIL,Default gateway is missing.,Missing default gateway,"**Missing default gateway.**
+
+PC0 had no default gateway configured, so it could communicate with devices on its local network but could not forward traffic to the remote network `192.168.2.0/24`.","The PC configuration was checked using:
+
+```bash
+ipconfig
+```
+
+The actual evidence showed:
+
+```text
+IPv4 Address: 192.168.1.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 0.0.0.0
+```
+
+The `Default Gateway: 0.0.0.0` value proves that the default gateway was missing.","The PC does not have a valid default gateway. The evidence shows gateway value '0.0.0.0'. Without a valid gateway, the PC cannot forward traffic to remote networks.",Configure the PC with the router's LAN interface IP address as its default gateway.,HIGH
+NET-007,Gateway,FAIL,"Wrong default gateway. Configured: 192.168.10.254, Expected: 192.168.10.1.",Wrong default gateway,,"# NET-007 – Wrong Default Gateway
+
+## Problem
+
+PC0 cannot reach another network because its default gateway is incorrectly configured.
+
+## Topology
+
+- 1 Router
+- 2 Cisco 2960 Switches
+- 2 PCs
+
+```text
+PC0 ── SW1 ── Router ── SW2 ── PC1
+IP Configuration
+
+PC0
+
+IP Address: 192.168.10.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.10.254 ❌
+
+PC1
+
+IP Address: 192.168.20.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.20.1
+
+Router
+
+G0/0: 192.168.10.1
+G0/1: 192.168.20.1
+Problem Verification
+
+The PC configuration was checked using:
+
+ipconfig
+
+PC0 was using:
+
+Default Gateway: 192.168.10.254
+
+However, the correct router interface was:
+
+192.168.10.1
+Wrong Gateway
+
+Connectivity Test
+
+The remote network was tested using:
+
+ping 192.168.20.10
+
+The ping failed because the default gateway was incorrect.
+
+Ping Failed
+
+Solution
+
+The default gateway of PC0 was changed from:
+
+192.168.10.254
+
+to:
+
+192.168.10.1
+Verification
+
+The configuration was checked again using:
+
+ipconfig
+
+The correct gateway was displayed.
+
+Correct Gateway
+
+Final Connectivity Test
+
+The remote network was tested again:
+
+ping 192.168.20.10
+
+The ping was successful with:
+
+Packets Sent = 4
+Received = 4
+Lost = 0
+Successful Ping
+
+Result
+
+The wrong default gateway was identified and corrected.
+
+After configuring the correct gateway, PC0 was able to communicate with the remote network successfully.
+
+What I Learned
+What a default gateway is.
+Why a gateway is required to reach another network.
+How to check gateway information using ipconfig.
+How an incorrect gateway can cause remote connectivity problems.
+How to verify connectivity using ping.
+
+![alt text](image.png)","The PC is configured with default gateway 192.168.10.254, but the evidence indicates that the router LAN interface uses a different address.",Change the PC's default gateway to the correct router LAN interface address.,HIGH
+NET-008,Gateway,FAIL,Gateway interface is administratively down.,Gateway interface is down,,"The router interface status was checked using:
+
+```bash
+show ip interface brief
+```
+
+The output showed:
+
+```text
+GigabitEthernet0/0 192.168.10.1 administratively down
+```
+
+This is the main evidence for the case.","The router's LAN interface is administratively down. Therefore, the PC cannot communicate with its default gateway.",Enter the affected router interface and use 'no shutdown' to enable it.,HIGH
+NET-009,Gateway,FAIL,"Gateway IP mismatch. PC gateway: 192.168.10.254, Router LAN IP: 192.168.10.1.",Gateway IP mismatch,,"# NET-009 – Gateway IP Mismatch
+
+## Problem
+
+The PC has a default gateway configured, but it cannot reach the router because the gateway address does not match the router's LAN IP.
+
+## Topology
+
+```text
+PC0 ─── Switch0 ─── Router0
+
+Devices used:
+
+1 PC
+1 Cisco 2960 Switch
+1 Cisco 1941 Router
+IP Configuration
+Router0
+
+Interface:
+
+GigabitEthernet0/0
+IP Address: 192.168.10.1
+Subnet Mask: 255.255.255.0
+PC0
+
+Initial configuration:
+
+IP Address: 192.168.10.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.10.254
+
+The gateway 192.168.10.254 is intentionally incorrect.
+
+Evidence Collection
+
+The router interface was checked using:
+
+show ip interface brief
+
+The router LAN interface was found as:
+
+GigabitEthernet0/0
+192.168.10.1
+Router Interface
+
+The PC configuration was checked using:
+
+ipconfig
+
+The PC had:
+
+Default Gateway: 192.168.10.254
+Wrong Gateway
+
+Root Cause
+
+The PC's gateway and the router's LAN IP were different.
+
+PC Gateway: 192.168.10.254 ❌
+Router LAN IP: 192.168.10.1 ✅
+
+Therefore, the problem was a Gateway IP Mismatch.
+
+Solution
+
+The PC's default gateway was changed from:
+
+192.168.10.254
+
+to:
+
+192.168.10.1
+Verification
+
+The PC configuration was checked again using:
+
+ipconfig
+
+The correct gateway was displayed:
+
+Default Gateway: 192.168.10.1
+Correct Gateway
+
+The connection was tested using:
+
+ping 192.168.10.1
+
+The ping was successful.
+
+Successful Ping
+
+Result
+
+The gateway IP mismatch was successfully identified and fixed.
+
+After configuring the PC with the correct gateway address, the PC was able to communicate with the router.
+
+What I Learned
+How to configure a router LAN interface.
+How to check router interface information using show ip interface brief.
+How to check PC network configuration using ipconfig.
+What a default gateway is.
+How to identify a gateway IP mismatch.
+How to verify connectivity using ping.
+
+![alt text](image.png)
+![alt text](image-1.png)","The router LAN interface is using 192.168.10.1, while the PC's configured gateway is different. Therefore, the PC cannot correctly reach its gateway.",Configure the PC's default gateway as 192.168.10.1.,HIGH
+NET-010,DHCP,FAIL,DHCP pool is missing.,DHCP pool missing.,,"PC0 was tested using:
+
+```bash
+ipconfig /release
+ipconfig /renew
+ipconfig
+```
+
+The result showed:
+
+```text
+DHCP request failed.
+IPv4 Address : 0.0.0.0
+Subnet Mask : 0.0.0.0
+Default Gateway : 0.0.0.0
+```
+
+**Result:** The PC could not obtain a usable IP address because the DHCP pool was missing. ✅",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,"The DHCP pool was intentionally left missing to create the required test-case condition.
+
+The DHCP configuration was checked using:
+
+```bash
+show ip dhcp pool
+```
+
+No DHCP pool was displayed.
+
+The running configuration was checked using:
+
+```bash
+show running-config
+```
+
+No matching DHCP pool configuration was present.",HIGH
+NET-011,DHCP,NOT_CHECKED,DHCP network information is unavailable.,Wrong DHCP network.,,"# NET-011 – Wrong DHCP Network
+
+## Problem
+
+The DHCP pool on the router was configured with the wrong network address.
+
+The LAN is using the `192.168.11.0/24` network, but the DHCP pool was incorrectly configured for the `192.168.20.0/24` network.
+
+As a result, the PC was unable to obtain a usable IPv4 address through DHCP.
+
+## Topology
+
+- 1 Cisco 1941 Router
+- 1 Cisco 2960 Switch
+- 1 PC
+- PC0 → Switch → Router0
+
+## IP Configuration
+
+**Router LAN Interface:**
+
+`192.168.11.1 / 255.255.255.0`
+
+**Correct LAN Network:**
+
+`192.168.11.0 / 24`
+
+**DHCP Client:**
+
+PC0 was configured to obtain its IP address automatically using DHCP.
+
+## Fault Created
+
+The DHCP pool was intentionally configured with the wrong network:
+
+```bash
+ip dhcp pool LANPOOL
+network 192.168.20.0 255.255.255.0
+default-router 192.168.11.1",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-012,DHCP,NOT_CHECKED,DHCP default-router information is unavailable.,Wrong DHCP default-router.,,"# NET-012 – Wrong DHCP Gateway
+
+## Problem
+
+The DHCP server was configured with the wrong default gateway.
+
+The LAN network is `192.168.12.0/24` and the actual router gateway is `192.168.12.1`. However, the DHCP pool was intentionally configured to provide `192.168.12.254` as the default gateway.
+
+As a result, the PC receives a valid IP address but is given an incorrect gateway and cannot properly reach the remote network.
+
+## Topology
+
+- 1 Cisco 1941 Router
+- 1 Cisco 2960-24TT Switch
+- 1 PC
+- PC0 → Switch0 → Router0
+- PC0 Fa0 → Switch0 Fa0/1
+- Switch0 Gi0/1 → Router0 Gi0/0
+
+## Cable Configuration
+
+**PC0 → Switch0**
+
+- PC0 FastEthernet0
+- Switch0 FastEthernet0/1
+- Cable: Copper Straight-Through
+
+**Switch0 → Router0**
+
+- Switch0 GigabitEthernet0/1
+- Router0 GigabitEthernet0/0
+- Cable: Copper Straight-Through
+
+## IP Configuration
+
+**Router0 GigabitEthernet0/0:**
+
+`192.168.12.1 / 255.255.255.0`
+
+**Correct LAN Network:**
+
+`192.168.12.0 / 24`
+
+**PC0:**
+
+Configured to obtain its IP address automatically using DHCP.
+
+## Correct DHCP Configuration
+
+The network was first configured correctly using:
+
+```bash
+ip dhcp excluded-address 192.168.12.1
+
+ip dhcp pool LANPOOL
+network 192.168.12.0 255.255.255.0
+default-router 192.168.12.1
+
+The correct configuration was verified and PC0 successfully received an IP address from the DHCP server.
+
+Connectivity to the router was also verified using:
+
+ping 192.168.12.1
+
+Result: 4 packets received, 0% packet loss. ✅
+
+Fault Created
+
+After verifying the correct connection, the DHCP gateway was intentionally changed to an incorrect address:
+
+ip dhcp pool LANPOOL
+network 192.168.12.0 255.255.255.0
+default-router 192.168.12.254
+
+The network address remains correct, but the DHCP default gateway is incorrect.
+
+The actual router IP is:
+
+192.168.12.1
+
+The DHCP clients are incorrectly receiving:
+
+192.168.12.254
+
+as their default gateway.
+
+Verification
+
+The DHCP configuration was checked using:
+
+do show running-config
+
+The configuration showed:
+
+ip dhcp pool LANPOOL
+ network 192.168.12.0 255.255.255.0
+ default-router 192.168.12.254
+
+The router interface was verified using:
+
+do show ip interface brief
+
+The router's actual LAN address was confirmed as:
+
+GigabitEthernet0/0 192.168.12.1 up up
+PC Verification
+
+On PC0, the DHCP configuration was refreshed using:
+
+ipconfig /release
+ipconfig /renew
+ipconfig
+
+The PC received a valid IP address, for example:
+
+IPv4 Address.............: 192.168.12.2
+Subnet Mask..............: 255.255.255.0
+Default Gateway..........: 192.168.12.254
+
+The exact IP address may be different depending on DHCP allocation.
+
+The important point is that the PC receives a valid IP address but the default gateway is wrong.
+
+Expected Fault
+Actual Router IP : 192.168.12.1
+LAN Network : 192.168.12.0/24
+DHCP Network : 192.168.12.0/24
+DHCP Default Gateway : 192.168.12.254 ← WRONG
+
+This reproduces the NET-012 – Wrong DHCP Gateway fault.
+
+Expected Fix
+
+The DHCP default gateway should be corrected to the actual router interface:
+
+ip dhcp pool LANPOOL
+default-router 192.168.12.1
+
+The fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.
+
+Screenshots
+Topology
+
+Correct Connection Verification
+
+Wrong DHCP Gateway Configuration
+
+Running Configuration
+
+PC IP Configuration
+
+Ping Verification
+
+Result
+
+The NET-012 – Wrong DHCP Gateway fault was successfully created.
+
+The DHCP server provides a valid IP address to the PC, but the DHCP pool supplies an incorrect default gateway (192.168.12.254) instead of the actual router gateway (192.168.12.1).
+
+This reproduces the condition where the PC gets an IP but cannot reach the remote network because the DHCP default gateway is incorrect.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-013,DHCP,NOT_CHECKED,DHCP DNS information is unavailable.,Wrong DHCP DNS server.,,"# NET-013 – Wrong DHCP DNS
+
+## Problem
+
+The DHCP server provides an incorrect DNS server address to the PC.
+
+The PC receives a valid IP address and can communicate using IP addresses, but DNS name resolution fails because the DHCP pool provides the wrong DNS server.
+
+## Topology
+
+- 1 Cisco 1941 Router
+- 1 Cisco 2960 Switch
+- 1 PC
+- 1 Server (DNS Server)
+
+### Connections
+
+- Router0 GigabitEthernet0/0 → Switch0 GigabitEthernet0/1
+- Switch0 FastEthernet0/1 → PC0 FastEthernet0
+- Switch0 FastEthernet0/2 → Server0 FastEthernet0
+
+## IP Configuration
+
+### Router0
+
+**GigabitEthernet0/0**
+
+```text
+IP Address: 192.168.13.1
+Subnet Mask: 255.255.255.0
+
+Server0 – DNS Server
+IP Address: 192.168.13.2
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.13.1
+
+The DNS service contains the following A record:
+
+Name: www.test.com
+Type: A Record
+Address: 192.168.13.1
+PC0
+
+PC0 is configured to obtain its IPv4 configuration automatically using DHCP.
+
+Correct DHCP Configuration
+
+Initially, the DHCP pool was configured correctly:
+
+ip dhcp excluded-address 192.168.13.1 192.168.13.2
+
+ip dhcp pool LANPOOL
+ network 192.168.13.0 255.255.255.0
+ default-router 192.168.13.1
+ dns-server 192.168.13.2
+
+The correct configuration was verified using:
+
+do show running-config
+
+PC0 successfully received an IP address from the DHCP server.
+
+Correct Connectivity Verification
+
+The router was tested using:
+
+ping 192.168.13.1
+
+Result: 4 packets received, 0% packet loss. ✅
+
+The DNS server was tested using:
+
+ping 192.168.13.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+DNS name resolution was tested using:
+
+ping www.test.com
+
+The hostname successfully resolved to:
+
+192.168.13.1
+
+Result: 4 packets received, 0% packet loss. ✅
+
+This confirmed that the original configuration was working correctly before creating the fault.
+
+Fault Created
+
+After verifying the correct configuration, the DHCP DNS server was intentionally changed to an incorrect address.
+
+The faulty DHCP configuration is:
+
+ip dhcp pool LANPOOL
+ network 192.168.13.0 255.255.255.0
+ default-router 192.168.13.1
+ dns-server 192.168.13.254
+
+The network and default gateway remain correct.
+
+Only the DHCP DNS server was changed.
+
+Actual DNS Server
+192.168.13.2
+Incorrect DHCP DNS Server
+192.168.13.254
+
+Therefore, PC0 receives an incorrect DNS server address through DHCP.
+
+PC Verification
+
+PC0 was refreshed using DHCP.
+
+The PC received a valid IP address, subnet mask, and default gateway, but the DNS server supplied by DHCP was incorrect.
+
+The important fault condition is:
+
+IPv4 Address : 192.168.13.x
+Subnet Mask : 255.255.255.0
+Default Gateway : 192.168.13.1
+DNS Server : 192.168.13.254
+
+The exact IP address may vary depending on DHCP allocation.
+
+Fault Verification
+
+IP connectivity to the router was tested using:
+
+ping 192.168.13.1
+
+Result: 4 packets received, 0% packet loss. ✅
+
+IP connectivity to the DNS server was tested using:
+
+ping 192.168.13.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+DNS name resolution was tested using:
+
+ping www.test.com
+
+Result:
+
+Ping request could not find host www.test.com.
+Please check the name and try again.
+
+This confirms that IP connectivity is working, but DNS name resolution is failing.
+
+Expected Fault
+Actual Router IP : 192.168.13.1
+Actual DNS Server : 192.168.13.2
+DHCP Network : 192.168.13.0/24
+DHCP Gateway : 192.168.13.1
+DHCP DNS : 192.168.13.254 ← WRONG
+
+This reproduces the NET-013 – Wrong DHCP DNS fault.
+
+Expected Fix
+
+The DHCP DNS server should be corrected to the actual DNS server:
+
+ip dhcp pool LANPOOL
+ dns-server 192.168.13.2
+
+The fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.
+
+Screenshots
+Topology
+
+Save a screenshot showing:
+
+Router0
+Switch0
+PC0
+Server0
+All network connections
+Correct Configuration
+
+Save screenshots showing the original working DHCP configuration and PC configuration.
+
+Wrong DHCP DNS Configuration
+
+Save a screenshot showing:
+
+ip dhcp pool LANPOOL
+ network 192.168.13.0 255.255.255.0
+ default-router 192.168.13.1
+ dns-server 192.168.13.254
+Fault Verification
+
+Save the PC command prompt screenshot showing:
+
+ping 192.168.13.1
+
+with successful replies,
+
+ping 192.168.13.2
+
+with successful replies, and
+
+ping www.test.com
+
+with the DNS resolution failure.
+
+Result
+
+The NET-013 – Wrong DHCP DNS fault was successfully created and verified.
+
+The PC receives a valid IP address and can communicate with the router and DNS server using their IP addresses. However, the PC cannot resolve www.test.com because DHCP provides an incorrect DNS server address (192.168.13.254) instead of the actual DNS server (192.168.13.2).
+
+This successfully reproduces the condition:
+
+""IP connectivity works but names fail.""",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-014,DNS,NOT_CHECKED,DNS server information is unavailable.,Wrong DNS server.,,"# NET-014 – Wrong DNS Server
+
+## Problem
+
+PC0 was configured with an incorrect DNS server address. IP connectivity to the DNS server works when the correct DNS address is used, but hostname resolution fails when an incorrect DNS server is configured.
+
+## Topology
+
+- 1 PC
+- 1 Cisco 2960 Switch
+- 1 DNS Server
+- PC0 → Switch0
+- Switch0 → Server0
+
+## IP Configuration
+
+**PC0:** `192.168.14.10 / 255.255.255.0`
+
+**Server0:** `192.168.14.2 / 255.255.255.0`
+
+**Correct DNS Server:** `192.168.14.2`
+
+**Faulty DNS Server:** `192.168.14.99`
+
+No router is used in this test case because the PC and DNS server are on the same LAN.
+
+## Correct Configuration Verification
+
+Before creating the fault, the correct DNS configuration was verified.
+
+PC0 was configured with:
+
+```text
+IP Address: 192.168.14.10
+Subnet Mask: 255.255.255.0
+DNS Server: 192.168.14.2
+
+```
+Connectivity to the DNS server was tested using:
+
+ping 192.168.14.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+Hostname resolution was also verified using:
+
+ping www.test.com
+
+The hostname successfully resolved to:
+
+192.168.14.2
+
+This confirmed that the original DNS configuration was working correctly.
+
+## Fault Created
+
+After verifying the correct configuration, the DNS server address on PC0 was intentionally changed to an incorrect address:
+
+DNS Server: 192.168.14.99
+
+The correct DNS server is:
+
+192.168.14.2
+
+The incorrect DNS server is:
+
+192.168.14.99
+
+Only the DNS server address was changed. The PC IP address and subnet mask remained unchanged.
+
+Verification
+
+The faulty DNS configuration was verified using:
+
+ipconfig
+
+The PC configuration showed:
+
+IPv4 Address: 192.168.14.10
+Subnet Mask: 255.255.255.0
+DNS Server: 192.168.14.99
+
+IP connectivity to the actual DNS server was tested using:
+
+ping 192.168.14.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+The incorrect DNS server was tested using:
+
+ping 192.168.14.99
+
+Result: Request timed out. ❌
+
+Hostname resolution was tested using:
+
+ping www.test.com
+
+The result was:
+
+Ping request could not find host www.test.com.
+Please check the name and try again.
+
+This confirmed that the PC could communicate with the network, but hostname resolution failed because the DNS server address was incorrect.
+
+## Expected Fault
+PC IP Address : 192.168.14.10
+Subnet Mask : 255.255.255.0
+Correct DNS Server : 192.168.14.2
+Configured DNS : 192.168.14.99 ← WRONG
+
+This reproduces the NET-014 – Wrong DNS Server fault.
+
+Expected Fix
+
+The DNS server address on PC0 should be corrected to:
+
+192.168.14.2
+
+The fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.
+
+## Topology
+
+Correct DNS Configuration
+
+Correct DNS Verification
+
+Wrong DNS Configuration
+
+Fault Verification
+
+## Result
+
+The NET-014 – Wrong DNS Server fault was successfully created.
+
+PC0 has a valid IP configuration and can communicate with the DNS server at 192.168.14.2, but it cannot resolve www.test.com because the configured DNS server address 192.168.14.99 is incorrect.
+
+This successfully reproduces the condition where IP connectivity works but hostname resolution fails due to a wrong DNS server address.
+
+## What I Learned
+How DNS works in a local network
+How to configure a DNS server address on a PC
+How to verify IP connectivity using ping
+How to test hostname resolution using ping
+How an incorrect DNS server affects hostname resolution
+How to identify a wrong DNS server configuration
+How to create and verify a DNS troubleshooting fault in Cisco Packet Tracer",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-015,DNS,NOT_CHECKED,DNS service status is unavailable.,DNS service disabled.,,"# NET-015 – DNS Service Disabled
+
+## Problem
+
+The DNS service on the DNS server was intentionally disabled. As a result, the PC can communicate with the DNS server using its IP address, but it cannot resolve the hostname `www.test.com`.
+
+## Topology
+
+- 1 PC
+- 1 Cisco 2960 Switch
+- 1 Server
+- PC0 → Fa0/1
+- Server0 → Fa0/2
+
+## IP Configuration
+
+**PC0:** `192.168.15.10 / 255.255.255.0` 
+**DNS Server:** `192.168.15.2 / 255.255.255.0`
+
+**DNS Server configured on PC0:** `192.168.15.2`
+
+## Correct Configuration
+
+The DNS server was initially configured with the following A record:
+
+```text
+Name: www.test.com
+Type: A Record
+Address: 192.168.15.2
+```
+
+The DNS service was initially turned ON to verify that the correct configuration was working.
+
+Initial Verification
+
+Connectivity between PC0 and the DNS server was tested using:
+
+ping 192.168.15.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+DNS hostname resolution was also tested using:
+
+ping www.test.com
+
+The hostname successfully resolved to:
+
+192.168.15.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+## Fault Created
+
+After verifying the correct connection, the DNS service on Server0 was intentionally turned OFF.
+
+The DNS A record was kept unchanged:
+
+www.test.com → 192.168.15.2
+
+The fault is that the DNS service itself is disabled.
+
+Verification After Fault
+
+IP connectivity was tested again using:
+
+ping 192.168.15.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+This confirms that the PC can still communicate with the DNS server.
+
+Hostname resolution was then tested using:
+
+ping www.test.com
+
+## The result was:
+
+Ping request could not find host www.test.com.
+Please check the name and try again.
+
+This confirms that hostname resolution fails because the DNS service is disabled.
+
+Expected Fault
+DNS Server IP : 192.168.15.2
+DNS Record : www.test.com → 192.168.15.2
+DNS Service : OFF ← WRONG
+
+ping 192.168.15.2 : SUCCESS
+ping www.test.com : FAILED
+
+This reproduces the NET-015 – DNS Service Disabled fault.
+
+## Expected Fix
+
+The DNS service on Server0 should be turned ON.
+
+The DNS A record should remain:
+
+www.test.com → 192.168.15.2
+
+The fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.
+
+## Topology
+
+DNS Configuration
+
+PC IP Configuration
+
+Successful IP Ping Before Fault
+
+Successful DNS Resolution Before Fault
+
+DNS Service Disabled
+
+IP Ping After Fault
+
+Failed Hostname Resolution
+
+## Result
+
+The NET-015 – DNS Service Disabled fault was successfully created.
+
+The PC can still reach the DNS server using its IP address, but hostname resolution fails because the DNS service on Server0 is turned OFF.
+
+This reproduces the condition where the hostname cannot be resolved even though IP connectivity to the DNS server is working.
+
+## What I Learned
+How to configure a DNS server in Cisco Packet Tracer
+How to create an A record
+How to configure a PC to use a DNS server
+How to test DNS resolution using ping
+How to identify the difference between IP connectivity and DNS resolution
+How to disable the DNS service to reproduce a DNS failure
+How to verify a DNS service fault",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-016,DNS,NOT_CHECKED,DNS record information is unavailable.,DNS record missing.,,"# NET-016 – DNS Record Missing
+
+## Problem
+
+The required DNS record for the hostname `www.test.com` was missing from the DNS server.
+
+As a result, the PC could communicate with the DNS server using its IP address, but it could not resolve the hostname `www.test.com`.
+
+## Topology
+
+- 1 PC
+- 1 Cisco 2960 Switch
+- 1 DNS Server
+- PC0 → Fa0/1
+- Server0 → Fa0/2
+
+## IP Configuration
+
+**PC0:** `192.168.16.10 / 255.255.255.0` 
+**DNS Server:** `192.168.16.2 / 255.255.255.0`
+
+**DNS Server configured on PC0:** `192.168.16.2`
+
+## Correct Configuration
+
+The DNS server was initially configured with the following A record:
+
+```text
+Name: www.test.com
+Type: A Record
+Address: 192.168.16.2
+
+```
+The DNS service was kept ON.
+
+Initial Verification
+
+Connectivity between PC0 and the DNS server was tested using:
+
+ping 192.168.16.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+Hostname resolution was also tested using:
+
+ping www.test.com
+
+The hostname successfully resolved to:
+
+192.168.16.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+This confirmed that the original DNS configuration was working correctly.
+
+Fault Created
+
+After verifying the correct configuration, the DNS A record for www.test.com was intentionally removed from Server0.
+
+The DNS service remained ON.
+
+The record that was removed was:
+
+www.test.com → 192.168.16.2
+
+After removal, the DNS record table was empty.
+
+Verification After Fault
+
+IP connectivity was tested again using:
+
+ping 192.168.16.2
+
+Result: 4 packets received, 0% packet loss. ✅
+
+This confirmed that the PC could still communicate with the DNS server.
+
+Hostname resolution was then tested using:
+
+ping www.test.com
+
+The result was:
+
+Ping request could not find host www.test.com.
+Please check the name and try again.
+
+This confirmed that the hostname could not be resolved because its DNS record was missing.
+
+Expected Fault
+DNS Server IP : 192.168.16.2
+DNS Service : ON
+DNS Record : www.test.com → MISSING
+
+ping 192.168.16.2 : SUCCESS
+ping www.test.com : FAILED
+
+This reproduces the NET-016 – DNS Record Missing fault.
+
+Expected Fix
+
+The missing DNS A record should be added back to the DNS server:
+
+Name: www.test.com
+Type: A Record
+Address: 192.168.16.2
+
+The fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.
+
+## Topology
+
+Correct DNS Record Configuration
+
+Successful IP Connectivity
+
+Successful DNS Resolution Before Fault
+
+DNS Record Removed
+
+Successful IP Connectivity After Fault
+
+Failed Hostname Resolution
+
+## Result
+
+The NET-016 – DNS Record Missing fault was successfully created.
+
+The PC can communicate with the DNS server using its IP address, but the hostname www.test.com cannot be resolved because the required DNS A record is missing.
+
+This reproduces the condition where IP connectivity works but one hostname cannot be resolved due to a missing DNS record.
+
+## What I Learned
+How to configure a DNS server in Cisco Packet Tracer
+How to create an A record
+How to remove a DNS record
+How to configure a PC to use a DNS server
+How to verify IP connectivity using ping
+How to test hostname resolution using ping
+How to identify a missing DNS record
+How to distinguish a missing DNS record from a disabled DNS service",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-017,Routing,FAIL,Required static route is missing.,Static route missing.,,"# NET-017 – Missing Static Route
+
+## Problem
+
+The remote network could not be reached because the required static routes were missing from the routers.
+
+## Topology
+
+- 2 Cisco 1941 Routers
+- 2 Cisco 2960 Switches
+- 2 PCs
+- R1 → Switch0 → PC0
+- R2 → Switch1 → PC1
+- R1 → R2 using GigabitEthernet0/1
+
+## IP Configuration
+
+### R1
+
+**GigabitEthernet0/0:** `192.168.17.1 / 255.255.255.0` 
+**GigabitEthernet0/1:** `10.0.0.1 / 255.255.255.252`
+
+### R2
+
+**GigabitEthernet0/0:** `192.168.18.1 / 255.255.255.0` 
+**GigabitEthernet0/1:** `10.0.0.2 / 255.255.255.252`
+
+### PC0
+
+**IP Address:** `192.168.17.10` 
+**Subnet Mask:** `255.255.255.0` 
+**Default Gateway:** `192.168.17.1`
+
+### PC1
+
+**IP Address:** `192.168.18.10` 
+**Subnet Mask:** `255.255.255.0` 
+**Default Gateway:** `192.168.18.1`
+
+## Correct Connection Verification
+
+The R1 and R2 interfaces were verified using:
+
+```bash
+show ip interface brief
+
+R1 showed:
+
+GigabitEthernet0/0 192.168.17.1 up up
+GigabitEthernet0/1 10.0.0.1 up up
+
+R2 showed:
+
+GigabitEthernet0/0 192.168.18.1 up up
+GigabitEthernet0/1 10.0.0.2 up up
+
+The direct connection between R1 and R2 was tested using:
+
+ping 10.0.0.2
+
+from R1.
+
+Result: 100% success. ✅
+
+The reverse connection was also tested from R2:
+
+ping 10.0.0.1
+
+Result: 100% success. ✅
+
+LAN Connectivity Verification
+
+PC0 was able to reach its local router:
+
+ping 192.168.17.1
+
+Result: 4 packets received, 0% packet loss. ✅
+
+PC1 was also configured with the R2 LAN gateway:
+
+192.168.18.1
+Fault Created
+
+The required static routes between the two LAN networks were intentionally not configured.
+
+R1 does not have a route to:
+
+192.168.18.0/24
+
+R2 does not have a route to:
+
+192.168.17.0/24
+
+Therefore, the remote network cannot be reached.
+
+Verification
+
+The routing table on R1 was checked using:
+
+show ip route
+
+R1 contained:
+
+C 10.0.0.0/30 is directly connected, GigabitEthernet0/1
+C 192.168.17.0/24 is directly connected, GigabitEthernet0/0
+
+However, the following route was missing:
+
+192.168.18.0/24
+
+The routing table on R2 was also checked using:
+
+show ip route
+
+R2 contained:
+
+C 10.0.0.0/30 is directly connected, GigabitEthernet0/1
+C 192.168.18.0/24 is directly connected, GigabitEthernet0/0
+
+However, the following route was missing:
+
+192.168.17.0/24
+Fault Verification
+
+From PC0, connectivity to PC1 was tested using:
+
+ping 192.168.18.10
+
+The result was:
+
+Reply from 192.168.17.1: Destination host unreachable.
+
+Result: 4 packets sent, 0 packets received, 100% packet loss. ❌
+
+This confirms that PC0 can reach its local router but cannot reach the remote LAN because the required static route is missing.
+
+## Expected Fix
+
+The missing route on R1 should be:
+
+ip route 192.168.18.0 255.255.255.0 10.0.0.2
+
+The missing route on R2 should be:
+
+ip route 192.168.17.0 255.255.255.0 10.0.0.1
+
+The fix is intentionally not applied in this test-case file because the purpose of this file is to preserve the faulty state for the AI troubleshooting dataset.
+
+## Network Topology
+
+R1-R2 Connectivity
+
+PC0 Local Connectivity
+
+Failed Remote Connectivity
+
+R1 Routing Table
+
+R2 Routing Table
+
+## Result
+
+The NET-017 – Missing Static Route fault was successfully created.
+
+The routers and local networks are correctly configured, and the R1-R2 connection is working. However, the static routes to the remote LANs are missing from the routing tables.
+
+As a result, PC0 cannot reach the remote PC1 network, reproducing the condition where the remote network cannot be reached because the required static route is missing.
+
+## What I Learned
+How to configure IP addresses on router interfaces
+How to connect two routers using a point-to-point network
+How to verify router interfaces using show ip interface brief
+How to verify routing tables using show ip route
+How static routes provide paths to remote networks
+How a missing static route causes remote network connectivity failure
+How to troubleshoot Layer 3 routing problems using ping",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,HIGH
+NET-018,Routing,NOT_CHECKED,Next-hop information is unavailable.,Wrong next hop.,,"# NET-018 – Wrong Static Route
+
+## Problem
+The static route to the remote network was configured with the wrong next-hop address, making the remote network unreachable.
+
+## Topology
+- 2 Cisco 1941 Routers
+- 2 Cisco 2960 Switches
+- 2 PCs
+- PC0 → Switch0 → R1
+- R1 → R2
+- R2 → Switch1 → PC1
+
+## IP Configuration
+
+**R1 LAN:** `192.168.17.1 / 255.255.255.0`
+
+**R2 LAN:** `192.168.18.1 / 255.255.255.0`
+
+**R1-R2 Link:**
+- R1: `10.0.0.1 / 255.255.255.252`
+- R2: `10.0.0.2 / 255.255.255.252`
+
+**PC0:** `192.168.17.10 / 255.255.255.0`
+- Default Gateway: `192.168.17.1`
+
+**PC1:** `192.168.18.10 / 255.255.255.0`
+- Default Gateway: `192.168.18.1`
+
+## Fault Created
+
+A static route was intentionally configured on R1 with the wrong next-hop address:
+
+```bash
+ip route 192.168.18.0 255.255.255.0 10.0.0.3
+```
+
+The correct next-hop address should be:
+
+10.0.0.2
+
+However, 10.0.0.3 was intentionally used to create the faulty scenario.
+
+Verification of Fault
+
+The routing table on R1 was checked using:
+
+show ip route
+
+## The output showed:
+
+S 192.168.18.0/24 [1/0] via 10.0.0.3
+
+This confirmed that the route points to the wrong next hop.
+
+Connectivity from PC0 to the remote PC was tested using:
+
+ping 192.168.18.10
+
+The ping failed, confirming that the remote network was unreachable.
+
+## Expected Fault Behavior
+
+PC0 cannot successfully reach PC1 because R1 forwards traffic toward the incorrect next-hop address.
+
+## Correction
+
+The fault will be corrected later during the fault-correction phase.
+
+The incorrect route will be removed:
+
+no ip route 192.168.18.0 255.255.255.0 10.0.0.3
+
+The correct static route will then be added:
+
+ip route 192.168.18.0 255.255.255.0 10.0.0.2
+
+After correction, connectivity will be tested using:
+
+ping 192.168.18.10
+
+The expected result will be:
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Screenshots
+R1 Routing Table
+
+PC0 Ping Test
+
+## Result
+
+NET-018 was successfully created with an intentionally incorrect static route. The routing table confirmed the wrong next-hop address, and the remote network was unreachable as expected.
+
+The fault has been intentionally left unfixed for the later fault-correction phase.
+
+## What I Learned
+How static routes work
+How to configure a static route using a next-hop address
+How to verify routes using show ip route
+How an incorrect next-hop address can make a remote network unreachable
+How to test network connectivity using ping",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-019,Routing,FAIL,Router interface is administratively down.,Router interface is administratively down,,"# NET-019 – Router Interface Down
+
+## Problem
+A router interface was administratively shut down, causing the routed link between the two routers to stop communicating.
+
+## Topology
+- 2 Cisco 1941 Routers
+- 2 Cisco 2960 Switches
+- 2 PCs
+- PC0 → Switch0 → R1
+- R1 → R2
+- R2 → Switch1 → PC1
+
+## IP Configuration
+
+**R1 LAN:** `192.168.19.1 / 255.255.255.0`
+
+**R2 LAN:** `192.168.20.1 / 255.255.255.0`
+
+**R1-R2 Link:**
+- R1 GigabitEthernet0/1: `10.0.0.1 / 255.255.255.252`
+- R2 GigabitEthernet0/1: `10.0.0.2 / 255.255.255.252`
+
+**PC0:** `192.168.19.10 / 255.255.255.0`
+- Default Gateway: `192.168.19.1`
+
+**PC1:** `192.168.20.10 / 255.255.255.0`
+- Default Gateway: `192.168.20.1`
+
+## Initial Verification
+
+Before creating the fault, the R1-R2 connection was tested from R1 using:
+
+```bash
+ping 10.0.0.2
+
+``
+
+The ping was successful:
+
+Success rate is 100 percent (5/5)
+
+This confirmed that the routed link was working before the fault was introduced.
+
+Fault Created
+
+The fault was intentionally created by administratively shutting down R1's GigabitEthernet0/1 interface:
+
+enable
+configure terminal
+interface gigabitEthernet 0/1
+shutdown
+Fault Verification
+
+The interface status was checked using:
+
+do show ip interface brief
+
+The output confirmed:
+
+GigabitEthernet0/1 10.0.0.1 administratively down down
+
+This confirmed that the router interface was intentionally placed in the administratively down state.
+
+Expected Fault Behavior
+
+Because R1's GigabitEthernet0/1 interface is shut down, the connection between R1 and R2 cannot communicate.
+
+Traffic from the R1 LAN toward the R2 LAN will therefore be unable to cross the router-to-router link.
+
+## Correction
+
+The fault will be corrected later during the fault-correction phase.
+
+The interface can be restored using:
+
+no shutdown
+
+After restoring the interface, connectivity can be tested again using:
+
+ping 10.0.0.2
+
+The expected result after correction is:
+
+Success rate is 100 percent
+Screenshots
+R1 Interface Down Verification
+
+## Result
+
+NET-019 was successfully created with R1's GigabitEthernet0/1 interface intentionally shut down. The show ip interface brief command confirmed that the interface was in the administratively down state.
+
+The fault has been intentionally left unfixed for the later fault-correction phase.
+
+## What I Learned
+How to configure router interfaces
+How to verify interface status using show ip interface brief
+How the shutdown command administratively disables an interface
+How an interface shutdown can interrupt routed communication
+How to identify an administratively down interface
+How to restore an interface using no shutdown",The evidence indicates that the router interface connecting the routed link is administratively down. This prevents communication between the routers.,Enter the affected router interface and use 'no shutdown' to restore the interface.,HIGH
+NET-020,Routing,FAIL,Default route is missing.,Default route missing.,,"# NET-020 – Missing Default Route
+
+## Problem
+The default route was missing on the edge router, so the PC could communicate with its local router but could not reach the remote network.
+
+## Topology
+- 2 Cisco 1941 Routers
+- 2 Cisco 2960 Switches
+- 2 PCs
+- PC0 → Switch0 → R1
+- R1 → R2
+- R2 → Switch1 → PC1
+
+## IP Configuration
+
+**PC0:** `192.168.20.10 / 255.255.255.0` 
+**R1 G0/0:** `192.168.20.1 / 255.255.255.0` 
+**R1 G0/1:** `10.0.0.1 / 255.255.255.252` 
+**R2 G0/1:** `10.0.0.2 / 255.255.255.252` 
+**R2 G0/0:** `172.16.0.1 / 255.255.255.0` 
+**PC1:** `172.16.0.10 / 255.255.255.0`
+
+## Solution
+
+The network was configured with two routers connected through the `10.0.0.0/30` network.
+
+R1 was configured with:
+
+```bash
+interface gigabitEthernet 0/0
+ip address 192.168.20.1 255.255.255.0
+no shutdown
+
+```
+
+interface gigabitEthernet 0/1
+ip address 10.0.0.1 255.255.255.252
+no shutdown
+
+R2 was configured with:
+
+interface gigabitEthernet 0/0
+ip address 172.16.0.1 255.255.255.0
+no shutdown
+
+interface gigabitEthernet 0/1
+ip address 10.0.0.2 255.255.255.252
+no shutdown
+
+The default route was intentionally left missing on R1 to demonstrate the fault.
+
+Verification
+
+The R1-R2 connection was tested using:
+
+ping 10.0.0.2
+
+Result: Successful connectivity between R1 and R2. ✅
+
+PC0 was tested against its local gateway:
+
+ping 192.168.20.1
+
+Result: 4 packets received, 0% packet loss. ✅
+
+The remote network was then tested:
+
+ping 172.16.0.10
+
+The result was:
+
+Reply from 192.168.20.1: Destination host unreachable.
+
+Result: 4 packets lost, 100% loss. ❌
+
+The routing table on R1 was checked using:
+
+show ip route
+
+The routing table showed that no default route was configured.
+
+R1 Routing Table
+
+PC0 Local Gateway Ping
+
+Remote Network Ping Failure
+
+## Result
+
+The missing default route fault was successfully created and demonstrated. PC0 could communicate with its local router, and R1 could communicate with R2, but PC0 could not reach the remote network because R1 did not have a default route.
+
+## What I Learned
+How routers use routing tables to forward packets
+How to configure router interfaces
+How to verify routes using show ip route
+How a missing default route can prevent communication with unknown networks
+How to test connectivity using ping
+How to identify a routing problem from a Destination host unreachable message",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,"The network was configured with two routers connected through the `10.0.0.0/30` network.
+
+R1 was configured with:
+
+```bash
+interface gigabitEthernet 0/0
+ip address 192.168.20.1 255.255.255.0
+no shutdown
+
+```
+
+interface gigabitEthernet 0/1
+ip address 10.0.0.1 255.255.255.252
+no shutdown
+
+R2 was configured with:
+
+interface gigabitEthernet 0/0
+ip address 172.16.0.1 255.255.255.0
+no shutdown
+
+interface gigabitEthernet 0/1
+ip address 10.0.0.2 255.255.255.252
+no shutdown
+
+The default route was intentionally left missing on R1 to demonstrate the fault.
+
+Verification
+
+The R1-R2 connection was tested using:
+
+ping 10.0.0.2
+
+Result: Successful connectivity between R1 and R2. ✅
+
+PC0 was tested against its local gateway:
+
+ping 192.168.20.1
+
+Result: 4 packets received, 0% packet loss. ✅
+
+The remote network was then tested:
+
+ping 172.16.0.10
+
+The result was:
+
+Reply from 192.168.20.1: Destination host unreachable.
+
+Result: 4 packets lost, 100% loss. ❌
+
+The routing table on R1 was checked using:
+
+show ip route
+
+The routing table showed that no default route was configured.
+
+R1 Routing Table
+
+PC0 Local Gateway Ping
+
+Remote Network Ping Failure",HIGH
+NET-021,ACL,FAIL,ACL is blocking ICMP traffic.,ACL blocks ICMP.,,"# NET-021 – ACL Blocks Ping
+
+## Problem
+The network was working normally, but an Access Control List (ACL) was configured to block ICMP traffic. As a result, the PC could no longer ping the server.
+
+## Topology
+- 1 Cisco 1941 Router
+- 2 Cisco 2960 Switches
+- 1 PC
+- 1 Server
+- PC0 → Switch0 → R1 → Switch1 → Server0
+
+## IP Configuration
+
+**R1 G0/0:** `192.168.21.1 / 255.255.255.0` 
+**R1 G0/1:** `192.168.22.1 / 255.255.255.0`
+
+**PC0:** `192.168.21.10 / 255.255.255.0` 
+**Default Gateway:** `192.168.21.1`
+
+**Server0:** `192.168.22.10 / 255.255.255.0` 
+**Default Gateway:** `192.168.22.1`
+
+## Initial Verification
+
+Before applying the ACL, connectivity between PC0 and Server0 was tested using:
+
+```bash
+ping 192.168.22.10
+
+```
+
+The result was:
+
+Reply from 192.168.22.10
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+
+This confirmed that the network was working correctly before the fault was introduced.
+
+## Fault Creation
+
+An extended ACL numbered 100 was created on R1 to deny ICMP traffic:
+
+configure terminal
+access-list 100 deny icmp any any
+access-list 100 permit ip any any
+
+The ACL was then applied to the interface connected toward the server LAN:
+
+interface gigabitEthernet 0/1
+ip access-group 100 out
+exit
+end
+Verification
+
+The ACL configuration was checked using:
+
+show access-lists
+
+The configuration contains:
+
+Extended IP access list 100
+ deny icmp any any
+ permit ip any any
+
+The applied ACL was verified using:
+
+show running-config
+
+The interface configuration contains:
+
+interface GigabitEthernet0/1
+ ip access-group 100 out
+Fault Testing
+
+After applying the ACL, PC0 attempted to ping the server again:
+
+ping 192.168.22.10
+
+## The result was:
+
+Reply from 192.168.21.1: Destination host unreachable.
+Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
+
+The ping failure confirms that ICMP traffic is being blocked by the ACL.
+
+Successful Ping Before ACL
+
+Failed Ping After ACL
+
+ACL Configuration
+
+## Result
+
+The ACL fault was successfully created. Before applying the ACL, PC0 could communicate with Server0 successfully. After applying ACL 100 to R1 GigabitEthernet0/1, ICMP traffic was denied and the ping from PC0 to Server0 failed with 100% packet loss.
+
+## What I Learned
+How Access Control Lists (ACLs) work
+How to create an extended ACL
+How to deny ICMP traffic using an ACL
+How to permit other IP traffic using an ACL
+How to apply an ACL to a router interface
+How to verify ACL configuration using show access-lists
+How to verify interface ACL configuration using show running-config
+How to test the effect of an ACL using ping",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,HIGH
+NET-022,ACL,FAIL,ACL is blocking HTTP traffic.,ACL blocks HTTP.,,"# NET-022 – ACL Blocks Web
+
+## Problem
+The web server was reachable by ping, but HTTP access was blocked by an incorrectly configured ACL.
+
+## Topology
+- 1 Cisco 1941 Router
+- 2 Cisco 2960 Switches
+- 1 PC
+- 1 Web Server
+- PC0 → Switch0 → R1
+- R1 → Switch1 → Server0
+
+## IP Configuration
+
+**PC0:** `192.168.22.10 / 255.255.255.0` 
+**R1 LAN Interface:** `192.168.22.1 / 255.255.255.0` 
+**Server0:** `192.168.23.10 / 255.255.255.0` 
+**R1 Server Interface:** `192.168.23.1 / 255.255.255.0`
+
+## Solution
+
+An extended ACL was created to block HTTP traffic to the web server:
+
+```bash
+access-list 101 deny tcp any host 192.168.23.10 eq 80
+access-list 101 permit ip any any
+
+```
+The ACL was applied to the router interface connected to the server network:
+
+interface gigabitEthernet 0/1
+ip access-group 101 out
+
+The first ACL rule blocks TCP traffic on port 80 (HTTP) to the web server, while the second rule permits all other IP traffic.
+
+Verification
+
+The ACL configuration was checked using:
+
+show access-lists
+
+## The result showed:
+
+Extended IP access list 101
+10 deny tcp any host 192.168.23.10 eq www (68 matches)
+20 permit ip any any (4 matches)
+
+The match count on the deny rule confirmed that HTTP traffic was being blocked.
+
+Connectivity was tested using:
+
+ping 192.168.23.10
+
+Result: Ping continued to work because ICMP traffic was not blocked. ✅
+
+HTTP access was tested from PC0 using:
+
+http://192.168.23.10
+
+Result: The web page was blocked by the ACL. ❌
+
+## Result
+
+The ACL successfully blocked HTTP traffic to the web server while allowing other IP traffic such as ICMP ping. The fault condition for NET-022 was successfully created and verified.
+
+## What I Learned
+How to create an extended ACL
+How to block HTTP traffic using TCP port 80
+How to apply an ACL to a router interface
+How to use show access-lists for verification
+How ACLs can selectively block specific types of network traffic
+How to allow other traffic using permit ip any any",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,"An extended ACL was created to block HTTP traffic to the web server:
+
+```bash
+access-list 101 deny tcp any host 192.168.23.10 eq 80
+access-list 101 permit ip any any
+
+```
+The ACL was applied to the router interface connected to the server network:
+
+interface gigabitEthernet 0/1
+ip access-group 101 out
+
+The first ACL rule blocks TCP traffic on port 80 (HTTP) to the web server, while the second rule permits all other IP traffic.
+
+Verification
+
+The ACL configuration was checked using:
+
+show access-lists",HIGH
+NET-023,ACL,FAIL,ACL placement is incorrect.,ACL placement is wrong.,,"# NET-023 – ACL Wrong Interface/Direction
+
+## Problem
+An ACL was applied to the wrong interface and direction on the router, causing network traffic to be blocked unexpectedly.
+
+## Topology
+- 1 Cisco 1941 Router
+- 2 Cisco 2960 Switches
+- 1 PC
+- 1 Server
+- PC0 → Switch0 → R1 → Switch1 → Server0
+
+## IP Configuration
+
+**PC0:** `192.168.22.10 / 255.255.255.0` 
+**R1 GigabitEthernet0/0:** `192.168.22.1 / 255.255.255.0` 
+**R1 GigabitEthernet0/1:** `192.168.23.1 / 255.255.255.0` 
+**Server0:** `192.168.23.10 / 255.255.255.0`
+
+## Solution
+
+An extended ACL was created to deny traffic from the server network to the PC network:
+
+```bash
+access-list 101 deny ip 192.168.23.0 0.0.0.255 192.168.22.0 0.0.0.255
+access-list 101 permit ip any any
+
+```
+The ACL was intentionally applied to the wrong interface and direction to create the fault:
+
+interface gigabitEthernet 0/0
+ip access-group 101 out
+
+This caused traffic from PC0 toward the remote server network to be blocked unexpectedly.
+
+Verification
+
+The ACL configuration was checked using:
+
+show access-lists
+
+The interface configuration was checked using:
+
+show running-config
+
+The configuration confirmed that ACL 101 was applied to GigabitEthernet0/0 in the outbound direction:
+
+interface GigabitEthernet0/0
+ip access-group 101 out
+
+Connectivity was tested from PC0 using:
+
+ping 192.168.23.10
+
+The result was:
+
+Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
+
+Result: Traffic was blocked unexpectedly. ❌
+
+Ping Verification
+
+## Result
+
+The ACL was successfully configured and intentionally applied to the wrong interface and direction. As a result, communication from PC0 to the server network was blocked, successfully reproducing the NET-023 fault condition.
+
+## What I Learned
+How to create an extended ACL
+How to apply an ACL to a router interface
+How inbound and outbound ACL directions affect traffic
+How an ACL applied to the wrong interface can block valid traffic
+How to verify ACL configuration using show access-lists
+How to verify interface ACL placement using show running-config
+How to test network connectivity using ping",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,"An extended ACL was created to deny traffic from the server network to the PC network:
+
+```bash
+access-list 101 deny ip 192.168.23.0 0.0.0.255 192.168.22.0 0.0.0.255
+access-list 101 permit ip any any
+
+```
+The ACL was intentionally applied to the wrong interface and direction to create the fault:
+
+interface gigabitEthernet 0/0
+ip access-group 101 out
+
+This caused traffic from PC0 toward the remote server network to be blocked unexpectedly.
+
+Verification
+
+The ACL configuration was checked using:
+
+show access-lists
+
+The interface configuration was checked using:
+
+show running-config
+
+The configuration confirmed that ACL 101 was applied to GigabitEthernet0/0 in the outbound direction:
+
+interface GigabitEthernet0/0
+ip access-group 101 out
+
+Connectivity was tested from PC0 using:
+
+ping 192.168.23.10
+
+The result was:
+
+Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
+
+Result: Traffic was blocked unexpectedly. ❌
+
+Ping Verification",HIGH
+NET-024,NAT,NOT_CHECKED,NAT configuration information is unavailable.,NAT missing.,,"# NET-024 – NAT Not Configured
+
+## Problem
+
+A private PC needs to communicate with an outside server, but NAT is not configured on the router.
+
+## Topology
+
+```text
+PC0 ─── Switch0 ─── Router0 ─── Server0
+
+Devices used:
+
+1 PC
+1 Cisco 2960 Switch
+1 Cisco 1941 Router
+1 Server
+IP Addressing
+PC0 – Private Network
+IP Address: 192.168.10.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.10.1
+Router0
+G0/0: 192.168.10.1
+G0/1: 192.168.20.1
+Server0 – Outside Network
+IP Address: 192.168.20.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.20.1
+Step 1 – Check Router Interfaces
+
+The router interfaces were checked using:
+
+show ip interface brief
+
+Both interfaces were configured and enabled.
+
+Step 2 – Check NAT Translation
+
+The NAT table was checked using:
+
+show ip nat translations
+
+Initially, no NAT translation was present.
+
+Step 3 – Check Running Configuration
+
+The router configuration was checked using:
+
+show running-config
+
+No NAT configuration was present.
+
+Root Cause
+
+The router did not have NAT configured.
+
+Therefore, private network traffic was not being translated.
+
+Solution
+
+The private router interface was configured as the NAT inside interface:
+
+interface gigabitEthernet 0/0
+ip nat inside
+
+The outside interface was configured as:
+
+interface gigabitEthernet 0/1
+ip nat outside
+
+A NAT ACL was created:
+
+access-list 1 permit 192.168.10.0 0.0.0.255
+
+PAT was configured using:
+
+ip nat inside source list 1 interface gigabitEthernet 0/1 overload
+Step 4 – Verify NAT Configuration
+
+The configuration was checked again using:
+
+show running-config
+
+The NAT configuration was now present.
+
+Step 5 – Generate Traffic
+
+Traffic was generated from PC0 using:
+
+ping 192.168.20.10
+Step 6 – Verify NAT Translation
+
+The NAT table was checked again:
+
+show ip nat translations
+
+A NAT translation appeared after traffic was generated.
+
+Result
+
+The NAT configuration problem was successfully identified and fixed.
+
+Initially, no NAT translation was present. After configuring NAT and generating traffic, a NAT translation appeared.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-025,NAT,NOT_CHECKED,NAT interface role information is unavailable.,NAT interface roles wrong.,,"# NET-025 – Wrong NAT Inside/Outside Interface
+
+## Problem
+
+Private network traffic is not being translated because the NAT inside and outside interfaces are configured incorrectly.
+
+## Topology
+
+```text
+PC0 ─── Switch0 ─── Router0 ─── Server0
+
+IP Addressing
+PC0
+IP Address: 192.168.10.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.10.1
+Router0
+G0/0: 192.168.10.1
+G0/1: 192.168.20.1
+Server0
+IP Address: 192.168.20.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.20.1
+Problem Creation
+
+The NAT interfaces were intentionally configured incorrectly.
+
+The private interface was configured as:
+
+G0/0 → ip nat outside
+
+The outside interface was configured as:
+
+G0/1 → ip nat inside
+
+The correct configuration should be:
+
+G0/0 → ip nat inside
+G0/1 → ip nat outside
+Evidence
+
+The router configuration was checked using:
+
+show running-config
+
+The NAT roles were found to be incorrect.
+
+The NAT translation table was also checked using:
+
+show ip nat translations
+
+The expected NAT translation was not created.
+
+Root Cause
+
+The NAT inside and outside interfaces were reversed.
+
+The private interface was incorrectly marked as outside, and the outside interface was incorrectly marked as inside.
+
+Solution
+
+The private interface was corrected:
+
+interface gigabitEthernet 0/0
+no ip nat outside
+ip nat inside
+
+The outside interface was corrected:
+
+interface gigabitEthernet 0/1
+no ip nat inside
+ip nat outside
+Verification
+
+The router configuration was checked again using:
+
+show running-config
+
+The correct NAT roles were now visible.
+
+Traffic was generated from PC0 using:
+
+ping 192.168.20.10
+
+The NAT translation table was checked again:
+
+show ip nat translations
+
+A NAT translation was now created.
+
+Result
+
+The wrong NAT inside/outside interface configuration was successfully identified and corrected.
+
+After assigning the correct NAT roles, NAT translation worked correctly.
+
+What I Learned
+What NAT inside means.
+What NAT outside means.
+How to identify inside and outside interfaces.
+How to check NAT configuration using show running-config.
+How to check NAT translations using show ip nat translations.
+Why incorrect NAT interface roles can prevent NAT translation.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-026,NAT,NOT_CHECKED,NAT ACL information is unavailable.,NAT ACL mismatch.,,"# NET-026 – NAT ACL Wrong
+
+## Problem
+
+One private PC is translated by NAT, but another private PC is not translated.
+
+## Topology
+
+```text
+PC0 ──┐
+ │
+PC1 ──┼── Switch0 ── Router0 ── Server0
+
+IP Addressing
+PC0
+IP Address: 192.168.10.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.10.1
+PC1
+IP Address: 192.168.10.11
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.10.1
+Router0
+G0/0: 192.168.10.1
+G0/1: 192.168.20.1
+Server0
+IP Address: 192.168.20.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.20.1
+Problem Creation
+
+The NAT ACL was intentionally configured to allow only PC0:
+
+access-list 1 permit host 192.168.10.10
+
+Therefore:
+
+PC0 → NAT allowed
+PC1 → NAT not allowed
+Evidence
+
+The ACL was checked using:
+
+show access-lists
+
+The ACL only allowed PC0.
+
+Traffic was generated from both PCs and the NAT table was checked using:
+
+show ip nat translations
+
+PC0 produced a NAT translation, while PC1 was not included because it was not permitted by the ACL.
+
+Root Cause
+
+The NAT ACL did not include PC1.
+
+The ACL only permitted:
+
+192.168.10.10
+
+but PC1 had:
+
+192.168.10.11
+
+Therefore, PC1 did not match the NAT ACL.
+
+Solution
+
+The incorrect ACL was removed:
+
+no access-list 1
+
+A new ACL was created for the complete private network:
+
+access-list 1 permit 192.168.10.0 0.0.0.255
+
+This allows both PC0 and PC1 to be translated.
+
+Verification
+
+The corrected ACL was checked using:
+
+show access-lists
+
+Traffic was generated from PC1:
+
+ping 192.168.20.10
+
+The NAT translation table was checked again:
+
+show ip nat translations
+
+PC1 was now eligible for NAT translation.
+
+Result
+
+The NAT ACL mismatch was successfully identified and corrected.
+
+Initially, the ACL allowed only PC0. After changing the ACL to allow the complete private network, both PCs were allowed to participate in NAT.
+
+What I Learned
+What a NAT ACL does.
+How an ACL controls which private addresses are translated.
+How to check an ACL using show access-lists.
+How to check NAT translations using show ip nat translations.
+How to correct a NAT ACL mismatch.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-027,Wireless,NOT_CHECKED,SSID information is unavailable.,Wrong SSID.,"The SSID was incorrect.
+
+The laptop was intended to connect to:
+
+`CampusWiFi`
+
+but the Access Point was using:
+
+`WrongWiFi`
+
+Therefore, the laptop could not join the intended Wi-Fi network.","# NET-027 – Wrong SSID
+
+## Problem
+
+The laptop cannot join the intended Wi-Fi network.
+
+## Topology
+
+- 1 Access Point
+- 1 Laptop
+
+## Configuration
+
+The Access Point was configured with the SSID:
+
+`CampusWiFi`
+
+![AP SSID](screenshots/02-ap-ssid.png)
+
+## Initial Connection
+
+The laptop was able to connect successfully to the Access Point.
+
+![Successful Connection](screenshots/03-connected.png)
+
+## Fault Created
+
+The Access Point SSID was changed to:
+
+`WrongWiFi`
+
+This created an SSID mismatch between the intended wireless network and the configured network.
+
+![Wrong SSID](screenshots/04-wrong-ssid.png)
+
+## Root Cause
+
+The SSID was incorrect.
+
+The laptop was intended to connect to:
+
+`CampusWiFi`
+
+but the Access Point was using:
+
+`WrongWiFi`
+
+Therefore, the laptop could not join the intended Wi-Fi network.
+
+## Solution
+
+The Access Point SSID was changed back to:
+
+`CampusWiFi`
+
+The laptop was then connected to the correct wireless network.
+
+![Connection Successful](screenshots/05-connection-success.png)
+
+## Result
+
+The wireless connection was successfully restored by using the correct SSID.
+
+## What I Learned
+
+- SSID is the name of a Wi-Fi network.
+- The correct wireless network must be selected.
+- An incorrect SSID can prevent a device from joining the intended Wi-Fi network.
+- Checking the wireless settings helps identify the problem.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,"The Access Point SSID was changed back to:
+
+`CampusWiFi`
+
+The laptop was then connected to the correct wireless network.
+
+![Connection Successful](screenshots/05-connection-success.png)",MEDIUM
+NET-028,Wireless,NOT_CHECKED,Wireless password information is unavailable.,Wrong wireless password.,The wireless client was using a different password from the Access Point.,"# NET-028 – Wrong Wi-Fi Password
+
+## Problem
+
+The laptop can see the Wi-Fi network but cannot authenticate because the wireless password is incorrect.
+
+## Topology
+
+- 1 Access Point
+- 1 Laptop
+
+## Access Point Configuration
+
+SSID:
+
+`CampusWiFi`
+
+Wi-Fi Password:
+
+`Cisco123`
+
+## Problem Created
+
+The laptop was configured with the wrong Wi-Fi password:
+
+`Wrong123`
+
+The password did not match the password configured on the Access Point.
+
+## Observed Problem
+
+The laptop could see the Wi-Fi network but authentication failed because the password was incorrect.
+
+## Root Cause
+
+The wireless client was using a different password from the Access Point.
+
+## text
+Access Point Password: Cisco123
+Laptop Password: Wrong123
+
+Solution
+
+The laptop password was changed to the correct password:
+
+Cisco123
+
+Result
+
+The laptop successfully authenticated and connected to the Access Point.
+
+## What I Learned
+A Wi-Fi network can be visible even when the password is incorrect.
+The wireless client must use the correct security key/password.
+If the password does not match the Access Point, authentication fails.
+Entering the correct Wi-Fi password restores the connection.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,Review the network configuration and correct the identified fault.,MEDIUM
+NET-029,Wireless,NOT_CHECKED,Wireless network information is unavailable.,Wireless DHCP/network problem.,"The DHCP service was not configured for the wireless network.
+
+The laptop requested an IP address, but there was no DHCP pool available to provide one.","# NET-029 – Wireless Client Gets No IP
+
+## Problem
+
+The laptop can connect to the wireless network, but it does not receive a usable IP address.
+
+## Topology
+
+- 1 Router
+- 1 Access Point
+- 1 Laptop
+
+## Network Configuration
+
+Router LAN IP:
+
+`192.168.30.1`
+
+Wireless SSID:
+
+`CampusWiFi`
+
+## Problem Created
+
+The router interface was configured with an IP address, but DHCP was not configured.
+
+Therefore, the laptop could connect to the Access Point but could not receive a usable IP address.
+
+![Laptop No IP](screenshots/03-laptop-no-ip.png)
+
+## Root Cause
+
+The DHCP service was not configured for the wireless network.
+
+The laptop requested an IP address, but there was no DHCP pool available to provide one.
+
+## Solution
+
+A DHCP pool was created on the router.
+
+## text
+
+ip dhcp pool WIFI
+
+network 192.168.30.0 255.255.255.0
+
+default-router 192.168.30.1
+
+Result
+
+The laptop successfully received an IP address from the DHCP server.
+
+Example:
+
+IPv4 Address: 192.168.30.x
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.30.1
+
+Connectivity Test
+
+The laptop successfully pinged the router.
+
+Conclusion
+
+The problem was caused by missing DHCP configuration.
+
+After configuring DHCP on the router, the wireless client successfully received an IP address and communicated with the router.
+
+## What I Learned
+
+A device can connect to Wi-Fi without having a usable IP address.
+
+DHCP automatically provides IP addresses to devices.
+
+The router can be configured as a DHCP server.
+
+ipconfig can be used to check the client's IP configuration.
+
+ping can be used to test connectivity.",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,A DHCP pool was created on the router.,MEDIUM
+NET-030,Wireless,NOT_CHECKED,AP VLAN information is unavailable.,AP port VLAN mismatch.,,"The VLAN configuration was checked using:
+
+show vlan brief
+
+The command showed that the Access Point's switch port Fa0/1 was assigned to VLAN 20 instead of VLAN 10.
+
+The switch interface status was also checked using:
+
+show interfaces status
+Root Cause
+
+The root cause was an incorrect VLAN assignment on the switch port connected to the Access Point.
+
+The configuration was:
+
+Fa0/1 → VLAN 20 ❌
+
+The required configuration was:
+
+Fa0/1 → VLAN 10 ✅",The rule checker identified this networking condition. The evidence should be reviewed to confirm the exact configuration causing the fault.,The Access Point's switch port was changed to VLAN 10.,MEDIUM

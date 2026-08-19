@@ -1,0 +1,31 @@
+Case ID,Status,Finding,Explanation
+NET-001,FAIL,"Wrong access VLAN detected. Actual VLAN: 20, Expected VLAN: 10.","NET-001: A network problem was detected. Finding: Wrong access VLAN detected. Actual VLAN: 20, Expected VLAN: 10.. The configuration should be corrected according to the identified fault."
+NET-002,PASS,Required VLAN 20 exists.,NET-002: The network configuration was checked successfully. No problem was detected for this case.
+NET-003,NOT_CHECKED,VLAN information for both PCs is unavailable.,NET-003: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-004,NOT_CHECKED,Actual and expected VLAN information is unavailable.,NET-004: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-005,FAIL,Inter-switch link is not trunking.,NET-005: A network problem was detected. Finding: Inter-switch link is not trunking.. The configuration should be corrected according to the identified fault.
+NET-006,FAIL,Default gateway is missing.,NET-006: A network problem was detected. Finding: Default gateway is missing.. The configuration should be corrected according to the identified fault.
+NET-007,FAIL,"Wrong default gateway. Configured: 192.168.10.254, Expected: 192.168.10.1.","NET-007: A network problem was detected. Finding: Wrong default gateway. Configured: 192.168.10.254, Expected: 192.168.10.1.. The configuration should be corrected according to the identified fault."
+NET-008,FAIL,Gateway interface is administratively down.,NET-008: A network problem was detected. Finding: Gateway interface is administratively down.. The configuration should be corrected according to the identified fault.
+NET-009,FAIL,"Gateway IP mismatch. PC gateway: 192.168.10.254, Router LAN IP: 192.168.10.1.","NET-009: A network problem was detected. Finding: Gateway IP mismatch. PC gateway: 192.168.10.254, Router LAN IP: 192.168.10.1.. The configuration should be corrected according to the identified fault."
+NET-010,FAIL,DHCP pool is missing.,NET-010: A network problem was detected. Finding: DHCP pool is missing.. The configuration should be corrected according to the identified fault.
+NET-011,NOT_CHECKED,DHCP network information is unavailable.,NET-011: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-012,NOT_CHECKED,DHCP default-router information is unavailable.,NET-012: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-013,NOT_CHECKED,DHCP DNS information is unavailable.,NET-013: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-014,NOT_CHECKED,DNS server information is unavailable.,NET-014: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-015,NOT_CHECKED,DNS service status is unavailable.,NET-015: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-016,NOT_CHECKED,DNS record information is unavailable.,NET-016: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-017,FAIL,Required static route is missing.,NET-017: A network problem was detected. Finding: Required static route is missing.. The configuration should be corrected according to the identified fault.
+NET-018,NOT_CHECKED,Next-hop information is unavailable.,NET-018: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-019,FAIL,Router interface is administratively down.,NET-019: A network problem was detected. Finding: Router interface is administratively down.. The configuration should be corrected according to the identified fault.
+NET-020,FAIL,Default route is missing.,NET-020: A network problem was detected. Finding: Default route is missing.. The configuration should be corrected according to the identified fault.
+NET-021,FAIL,ACL is blocking ICMP traffic.,NET-021: A network problem was detected. Finding: ACL is blocking ICMP traffic.. The configuration should be corrected according to the identified fault.
+NET-022,FAIL,ACL is blocking HTTP traffic.,NET-022: A network problem was detected. Finding: ACL is blocking HTTP traffic.. The configuration should be corrected according to the identified fault.
+NET-023,FAIL,ACL placement is incorrect.,NET-023: A network problem was detected. Finding: ACL placement is incorrect.. The configuration should be corrected according to the identified fault.
+NET-024,NOT_CHECKED,NAT configuration information is unavailable.,NET-024: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-025,NOT_CHECKED,NAT interface role information is unavailable.,NET-025: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-026,NOT_CHECKED,NAT ACL information is unavailable.,NET-026: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-027,NOT_CHECKED,SSID information is unavailable.,NET-027: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-028,NOT_CHECKED,Wireless password information is unavailable.,NET-028: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-029,NOT_CHECKED,Wireless network information is unavailable.,NET-029: The system could not completely verify this case. Additional evidence or configuration information is required.
+NET-030,NOT_CHECKED,AP VLAN information is unavailable.,NET-030: The system could not completely verify this case. Additional evidence or configuration information is required.
